@@ -1,25 +1,43 @@
-# Från 108 000 ord till ett navigerbart underlag
+# Därför kan du inte bara be en AI sammanfatta era dokument
 
-## Hur åtta heterogena dokument strukturerades på fyrtio minuter, och varför det sista steget ändå kräver en människa
+## Vad som faktiskt krävs för att göra en textmassa till ett beslutsunderlag — steg för steg, med felen kvar
 
-*Teknisk genomgång. Skriven 2026-09-13.*
-*Kod, data och källor: [github.com/tandregbg/valet2026](https://github.com/tandregbg/valet2026)*
+*Skriven 2026-09-13. Kod, data och källor:
+[github.com/tandregbg/valet2026](https://github.com/tandregbg/valet2026)*
 
 ---
 
-## Vad det här handlar om
+## Problemet
 
-Åtta organisationer publicerade var sitt programdokument samtidigt.
-Tillsammans 269 sidor och 108 523 ord, i åtta olika format och med åtta olika
-egna kapitelindelningar. Uppgiften: gör dem jämförbara.
+Din organisation sitter på textmassor som borde kunna ge svar. Kundintervjuer.
+Supportärenden. Remissvar. Offerter från åtta leverantörer. Protokoll från två
+års möten.
 
-Den här artikeln beskriver hur materialet gick från åtta PDF-filer till en
-struktur man kan ställa frågor mot. Den beskriver också var processen gick
-fel, eftersom det är där det mesta av lärdomen sitter.
+Det uppenbara är att lägga in alltihop i en AI och be om en jämförelse. Det
+går — kontextfönstren rymmer det numera. Du får ett välformulerat svar på
+trettio sekunder.
 
-Total tid: cirka 40 minuter från tom mapp till taggad version. Det inkluderar
-två återvändsgränder och ett allvarligt fel som upptäcktes av en människa,
-inte av maskinen.
+Frågan är om du kan lägga det svaret på bordet inför en investering på tio
+miljoner.
+
+Den här artikeln visar varför svaret oftast är nej, och vad som krävs i
+stället. Jag använder åtta svenska valmanifest som testmaterial — 269 sidor,
+108 523 ord, publicerade samtidigt och därför jämförbara i form. Men det
+hade lika gärna kunnat vara era offerter.
+
+**Det är inte en artikel om politik.** Det är en artikel om vad som händer
+mellan en hög med dokument och ett beslut.
+
+### Kortversionen
+
+Jag vände på flödet. I stället för att lämna texten till en modell och be om
+en analys byggde jag först en struktur, och gjorde analysen *på strukturen*.
+
+Det tog fyrtio minuter att bygga. Granskningen tog längre — och den gick inte
+att delegera. Däremellan hittade jag ett fel som hade förstört hela analysen,
+och som ingen maskin kunde ha upptäckt.
+
+Allt det står nedan, inklusive återvändsgränderna.
 
 > **Om artikelns karaktär.** Det här är en teknisk genomgång av en
 > databearbetningsprocess. Korpusen består av valmanifest, men artikeln handlar
@@ -51,7 +69,9 @@ Det sista steget är artikelns poäng.
 
 ---
 
-## Fas 1: Hämtning (10:19-10:29)
+## Fas 1: Få tag i materialet — och veta att det är rätt material
+
+*10:19–10:29*
 
 ### Beslut: bara förstahandskällor
 
@@ -165,7 +185,9 @@ missvisande på ett sätt ingen kan upptäcka i efterhand.
 
 ---
 
-## Fas 2: Taxonomin (10:29-10:34)
+## Fas 2: Bestämma kategorierna innan analysen börjar
+
+*10:29–10:34*
 
 ### Varför partiernas egna rubriker inte går att använda
 
@@ -194,10 +216,15 @@ och kundintervjuer som för den här korpusen.
 
 ### Lösningen: två lager
 
-**Lager 1, sakfrågan.** En neutral taxonomi som inte följer någons
-kapitelindelning: 12 domäner, 60 subdomäner. Ekonomi och skatt,
-arbetsmarknad, vård och välfärd, skola, brott, migration, klimat, bostad,
-familj, försvar, demokrati, landsbygd.
+**Lager 1, sakfrågan.** En egen kategoriindelning — en *taxonomi* — som inte
+följer någon av källornas egen struktur. Tolv sakområden, vart och ett
+uppdelat i fem till sju underkategorier: ekonomi och skatt, arbetsmarknad,
+vård och välfärd, skola, brott, migration, klimat, bostad, familj, försvar,
+demokrati, landsbygd.
+
+Poängen är att den är bestämd *innan* analysen börjar, står i en fil vem som
+helst kan läsa, och går att invända mot. Det är skillnaden mot att låta en
+modell kategorisera efter eget huvud.
 
 **Lager 2, inramningen.** Källans egen rubrik sparas på varje enhet i fältet
 `partiets_egen_rubrik`.
@@ -243,11 +270,14 @@ vägen ut i gränssnittet.
 
 ---
 
-## Fas 3: Segmentering och taggning (10:34-10:42)
+## Fas 3: Dela upp texten och sortera in den
 
-### Varför det behövdes åtta olika parsers
+*10:34–10:42*
 
-Ett "förslag" ser typografiskt olika ut i varje dokument:
+### Varför det behövdes åtta olika inläsningsrutiner
+
+Ett "förslag" ser olika ut rent typografiskt i varje dokument, och en dator
+måste få veta exakt vad den ska leta efter:
 
 - **KD** använder punktlistor med ett ovanligt specialtecken som bullet
 - **L** har numrerade förslag: `12. Rubrik. Brödtext...`
@@ -255,8 +285,8 @@ Ett "förslag" ser typografiskt olika ut i varje dokument:
 - **MP och C** har löpande kapiteltext utan listor
 - **S, M, SD** är styckebaserade utan tydliga markörer alls
 
-Det gick inte att skriva en generell parser. Jag skrev åtta, med gemensam
-normalisering:
+Det gick inte att skriva en rutin som klarade alla åtta. Jag skrev en per
+dokument, med gemensam städning av texten:
 
 ```python
 def normalisera(s):
@@ -320,7 +350,9 @@ vara ett allvarligt misstag, men det upptäcktes inte då.
 
 ---
 
-## Fas 4: Appen (10:42-10:52)
+## Fas 4: Göra det synligt
+
+*10:42–10:52*
 
 Flask, 227 rader. Fyra vyer, var och en med en distinkt fråga:
 
@@ -390,7 +422,7 @@ tills de ser tillräckliga ut.**
 
 ---
 
-## Fas 5: Felet som en människa hittade
+## Fas 5: Felet som bara en människa kunde hitta
 
 Appen var klar. Matrisen såg bra ut. Då kom en fråga från någon som tittade
 på den:

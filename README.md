@@ -1,19 +1,33 @@
-# Valmanifest 2026 — strukturerad datamängd och analysverktyg
+# Valmanifest 2026
 
 [![Tester](https://img.shields.io/badge/tester-34%20gr%C3%B6na-brightgreen)]()
 [![Version](https://img.shields.io/badge/version-0.6.1-blue)]()
 
-Åtta svenska valmanifest (108 206 ord) omvandlade till en strukturerad,
-granskningsbar datamängd — med en webbapp för att utforska den och en
-valkompass byggd på granskade påståenden.
+**Ett arbetsexempel på hur en ostrukturerad textmassa blir ett beslutsunderlag
+som går att ifrågasätta.**
 
-**Projektet är ett metodexempel:** hur en stor textmassa kan bli ett underlag
-som människor kan fatta beslut på, utan att överlåta tolkningen till en
-språkmodell.
+108 206 ord valmanifest → en kategoriserad datamängd → ett verktyg som visar
+sin egen osäkerhet. Allt öppet: källdokument med checksummor, kategorierna,
+koden, och en changelog som innehåller felen lika utförligt som framstegen.
 
-📄 **Utförlig genomgång av processen:** [`ARTIKEL.md`](ARTIKEL.md) — sex faser,
-vad som gick fel, och var gränsen går mellan vad maskinen klarar och vad den
-inte gör.
+Valmanifesten är testmaterialet, inte poängen. Samma metod fungerar på
+kundintervjuer, remissvar, offerter eller mötesprotokoll.
+
+## Börja här
+
+| Om du vill… | Gå till |
+|---|---|
+| **Förstå metoden** | [`ARTIKEL.md`](ARTIKEL.md) — sex steg, felen kvar |
+| **Se resultatet** | Kör appen (nedan), eller läs `/om` i den |
+| **Granska datan** | [`domains/pastaenden.jsonl`](domains/pastaenden.jsonl) |
+| **Kontrollera källorna** | [`domains/kallor.yaml`](domains/kallor.yaml) — URL + SHA256 |
+| **Se vad som gick fel** | [`CHANGELOG.md`](CHANGELOG.md) |
+
+```bash
+git clone https://github.com/tandregbg/valet2026.git && cd valet2026
+python3 -m venv .venv && .venv/bin/pip install flask pyyaml pytest
+.venv/bin/python app/app.py     # adressen skrivs ut
+```
 
 ---
 
