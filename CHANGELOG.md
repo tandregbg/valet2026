@@ -132,6 +132,19 @@ automatiserade klienter med HTTP 403. Dokumentet hämtades via en riktig
 webbläsarsession styrd över DevTools-protokollet, efter att
 Cloudflare-utmaningen passerats. Verifierat som äkta PDF.
 
+### Formuleringsrättning
+
+Ordet "tystnad" om tomma celler togs bort ur gränssnitt, README och artikel.
+Formuleringen påstod mer än datan bär: en tom cell betyder att taggningen inte
+hittade träffar, vilket med 40% svaga träffar och 2-21% bortfall lika gärna
+kan vara ett fel i heuristiken som en faktisk tystnad i manifestet. Ersatt med
+"ingen träff i domänen" plus en not om att varje cell är en hypotes att pröva
+mot källtexten.
+
+Samma sak gäller avläsningar av enskilda celler generellt. Artikeln har en
+egen sektion om varför sådana jämförelser är tekniskt korrekta men analytiskt
+svaga (textmängd != prioritet, olika segmenteringsgranularitet mellan partier).
+
 ### Kända begränsningar
 
 - Taggningen är maskinell och oreviderad. `granskad` är `false` på samtliga

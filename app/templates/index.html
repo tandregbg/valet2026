@@ -105,7 +105,7 @@
         <div class="nyckel-skala">
           <span class="legend-ruta tyst"></span>
         </div>
-        <span class="nyckel-txt">tystnad &mdash; inget förslag alls</span>
+        <span class="nyckel-txt">ingen träff i domänen</span>
       </div>
     </div>
 
@@ -121,21 +121,27 @@
     </p>
     <p>
       Stora siffran är ändå antal förslag, den lilla är andelen som färgen
-      bygger på. <strong>De streckade rutorna är ofta mer talande än
-      siffrorna.</strong>
+      bygger på.
     </p>
   </div>
 
   <div class="panelblock panelblock-varning">
-    <h3>Vad andelen inte säger</h3>
+    <h3>Vad matrisen inte säger</h3>
     <p>
       Andelen mäter hur mycket <em>text</em> partiet ägnar frågan. Det är
       inte samma sak som hur viktig den är för dem &mdash; ett parti kan
       säga något avgörande på två meningar.
     </p>
     <p>
-      Taggningen är maskinell och oreviderad. Se
-      <a href="{{ url_for('om') }}">Metod</a> för felkällorna.
+      En streckad ruta betyder att <strong>taggningen inte hittade några
+      träffar</strong> &mdash; inte att partiet saknar politik på området.
+      Med 40&nbsp;% av raderna på en enda nyckelordsträff är en tom cell
+      lika ofta ett fel i taggningen som en tystnad i manifestet.
+    </p>
+    <p>
+      Behandla varje cell som en hypotes att pröva mot källtexten, inte
+      som en slutsats. Klicka på den för att se förslagen bakom.
+      Se <a href="{{ url_for('om') }}">Metod</a> för felkällorna.
     </p>
   </div>
 

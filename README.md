@@ -56,11 +56,15 @@ python3 app/app.py               # http://127.0.0.1:5001
 
 Kulören visar vilken domän raden gäller. Mättnaden visar hur stor andel av
 partiets eget manifest som ligger där - andel används i stället för antal
-eftersom manifesten är olika långa. Streckad ruta betyder tystnad: inget
-förslag alls i domänen.
+eftersom manifesten är olika långa.
 
 Andelen mäter hur mycket **text** partiet ägnar frågan. Det är inte samma sak
 som hur viktig den är för dem.
+
+En streckad ruta betyder att taggningen inte hittade några träffar - inte att
+partiet saknar politik på området. Med 40% av raderna på en enda
+nyckelordsträff är en tom cell lika ofta ett fel i taggningen som en tystnad i
+manifestet. Behandla varje cell som en hypotes att pröva mot källtexten.
 
 ## Viktigt om tillförlitligheten
 
