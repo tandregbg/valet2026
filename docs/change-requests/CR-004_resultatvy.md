@@ -4,8 +4,9 @@
 |-------|-------|
 | **CR Number** | CR-004 |
 | **Date** | 2026-09-13 |
+| **Implementation Date** | 2026-09-13 |
 | **Author** | Claude Code |
-| **Status** | Proposed |
+| **Status** | Implemented |
 | **Priority** | Medium |
 | **Complexity** | Medium |
 | **Estimated Scope** | app, ny vy |
