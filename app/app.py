@@ -19,6 +19,9 @@ from flask import Flask, abort, render_template, request
 
 ROOT = Path(__file__).resolve().parent.parent
 app = Flask(__name__)
+# Sessionsnyckel for kompassens mellanlagring. Lokalt bruk (deploy.target=local);
+# byt till miljovariabel om appen nagonsin exponeras.
+app.secret_key = "val2026-lokal-utveckling"
 
 PARTIORDNING = ["V", "S", "MP", "C", "L", "KD", "M", "SD"]   # vanster -> hoger
 PARTIFARGER = {
@@ -50,6 +53,10 @@ def partier():
 # CR-002: granskningsgranssnitt for pastaendebanken
 from granskning import bp as granskning_bp   # noqa: E402
 app.register_blueprint(granskning_bp)
+
+# CR-001: valkompassens domanval och fragemotor
+from kompass import bp as kompass_bp         # noqa: E402
+app.register_blueprint(kompass_bp)
 
 
 @app.route("/")

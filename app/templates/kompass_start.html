@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block titel %}Valkompass{% endblock %}
+{% block innehall %}
+
+<h1>Vilka frågor är viktigast för dig?</h1>
+<p class="ingress">
+  Välj upp till {{ max_valda }} områden. Du får {{ antal_fragor }} påståenden
+  att gradera &mdash; tio från varje valt område, resten blandade från övriga.
+  De blandade finns för att resultatet inte ska bli självuppfyllande.
+</p>
+
+{% if valbara == 0 %}
+<div class="varning">
+  <strong>Inga områden är valbara än.</strong> Påståendebanken innehåller
+  {{ pastaenden_totalt }} godkända påståenden. Varje område behöver minst tio.
+  <a href="{{ url_for('granskning.index') }}">Granska kandidater</a> för att
+  fylla på.
+</div>
+{% endif %}
+
+<form method="get" action="{{ url_for('kompass.fragor') }}" id="domanform">
+  <div class="domankort">
+    {% for d in domaner %}
+    <label class="domankort-item {{ 'ej-valbar' if not d.valbar }}"
+           style="--dfarg:{{ d.farg }}">
+      <input type="checkbox" name="doman" value="{{ d.id }}"
+             {{ 'disabled' if not d.valbar }}>
+      <span class="domankort-namn">{{ d.namn }}</span>
+      <span class="domankort-antal">
+        {% if d.valbar %}{{ d.antal }} påståenden
+        {% else %}för få påståenden ({{ d.antal }}){% endif %}
+      </span>
+    </label>
+    {% endfor %}
+  </div>
+
+  <div class="kompassrad">
+    <span id="valdaraknare" class="granskliten">0 av {{ max_valda }} valda</span>
+    <button type="submit" class="knapp knapp-primar" id="startknapp" disabled>
+      Börja svara
+    </button>
+  </div>
+</form>
+
+<div class="panelblock panelblock-varning" style="margin-top:20px">
+  <h3>Om underlaget</h3>
+  <p>
+    Påståendena är omskrivna från texter i källdokumenten och granskade av en
+    människa. Matchningen visar var dina svar sammanfaller med förslag som går
+    att belägga &mdash; den mäter inte avstånd, och den är ingen
+    rekommendation.
+  </p>
+</div>
+
+<script>
+const MAX = {{ max_valda }};
+const form = document.getElementById('domanform');
+const raknare = document.getElementById('valdaraknare');
+const knapp = document.getElementById('startknapp');
+form.addEventListener('change', () => {
+  const valda = [...form.querySelectorAll('input[name=doman]:checked')];
+  raknare.textContent = valda.length + ' av ' + MAX + ' valda';
+  knapp.disabled = valda.length === 0;
+  form.querySelectorAll('input[name=doman]:not(:checked)').forEach(i => {
+    if (!i.closest('.ej-valbar')) i.disabled = valda.length >= MAX;
+  });
+});
+</script>
+
+{% endblock %}

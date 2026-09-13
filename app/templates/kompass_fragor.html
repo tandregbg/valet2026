@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block titel %}Valkompass &middot; frågor{% endblock %}
+{% block innehall %}
+
+{% if varningar %}
+<div class="varning">
+  {% for v in varningar %}<p style="margin:0 0 4px">{{ v }}</p>{% endfor %}
+</div>
+{% endif %}
+
+<div class="fragehuvud">
+  <span id="progresstext" class="granskliten">Fråga 1 av {{ fragor|length }}</span>
+  <div class="progressbar"><div class="progressfyll" id="progressfyll"></div></div>
+</div>
+
+<div id="fragecontainer">
+  {% for f in fragor %}
+  <div class="fraga" data-id="{{ f.id }}" data-index="{{ loop.index0 }}"
+       {% if not loop.first %}hidden{% endif %}>
+    {% if f.svag_traff %}
+    <span class="tagg" title="Bygger på en svag nyckelordsträff i taggningen">osäkert underlag</span>
+    {% endif %}
+    <p class="fragetext">{{ f.text }}</p>
+    <div class="skalarad">
+      {% for varde, etikett in skala %}
+      <button type="button" class="skalaknapp" data-varde="{{ varde }}">
+        <span class="skalasiffra">{{ varde }}</span>
+        <span class="skalaetikett">{{ etikett }}</span>
+      </button>
+      {% endfor %}
+    </div>
+    <div class="fragerad">
+      <button type="button" class="knapp bakat">Tillbaka</button>
+      <button type="button" class="knapp hoppa">Hoppa över</button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div id="klar" hidden class="panelblock">
+  <h3>Klart</h3>
+  <p id="klartext"></p>
+  <button type="button" class="knapp knapp-primar" id="visaresultat">Visa resultat</button>
+</div>
+
+<script>
+(function(){
+  const VALDA = {{ valda|tojson }};
+  const fragor = [...document.querySelectorAll('.fraga')];
+  const total = fragor.length;
+  const svar = new Map();
+  let i = 0;
+
+  const load = () => { try {
+    const r = JSON.parse(localStorage.getItem('kompass_svar') || '[]');
+    r.forEach(s => svar.set(s.pastaende_id, s));
+  } catch(e){} };
+  const save = () => { try {
+    localStorage.setItem('kompass_svar', JSON.stringify([...svar.values()]));
+  } catch(e){} };
+  load();
+
+  function visa(n){
+    if (n >= total) return klart();
+    fragor.forEach(f => f.hidden = true);
+    fragor[n].hidden = false;
+    i = n;
+    document.getElementById('progresstext').textContent =
+      'Fråga ' + (n+1) + ' av ' + total;
+    document.getElementById('progressfyll').style.width =
+      ((n/total)*100) + '%';
+    const id = fragor[n].dataset.id;
+    fragor[n].querySelectorAll('.skalaknapp').forEach(b => {
+      b.classList.toggle('vald',
+        svar.has(id) && svar.get(id).varde === Number(b.dataset.varde));
+    });
+  }
+
+  function klart(){
+    fragor.forEach(f => f.hidden = true);
+    document.getElementById('progressfyll').style.width = '100%';
+    document.getElementById('progresstext').textContent = 'Alla frågor besvarade';
+    const besvarade = [...svar.values()].filter(s => !s.hoppad).length;
+    const hoppade = [...svar.values()].filter(s => s.hoppad).length;
+    document.getElementById('klartext').textContent =
+      besvarade + ' besvarade, ' + hoppade + ' överhoppade.';
+    document.getElementById('klar').hidden = false;
+  }
+
+  document.getElementById('fragecontainer').addEventListener('click', e => {
+    const id = fragor[i].dataset.id;
+    if (e.target.closest('.skalaknapp')) {
+      svar.set(id, {pastaende_id:id, varde:Number(e.target.closest('.skalaknapp').dataset.varde)});
+      save(); visa(i+1);
+    } else if (e.target.closest('.hoppa')) {
+      svar.set(id, {pastaende_id:id, varde:null, hoppad:true});
+      save(); visa(i+1);
+    } else if (e.target.closest('.bakat')) {
+      if (i > 0) visa(i-1);
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('klar').hidden === false) return;
+    if (e.key >= '1' && e.key <= '5') {
+      const id = fragor[i].dataset.id;
+      svar.set(id, {pastaende_id:id, varde:Number(e.key)});
+      save(); visa(i+1);
+    } else if (e.key === 'ArrowLeft' && i > 0) { visa(i-1); }
+    else if (e.key === 'ArrowRight') { visa(i+1); }
+  });
+
+  document.getElementById('visaresultat').addEventListener('click', async () => {
+    const r = await fetch('{{ url_for("kompass.svar") }}', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({svar:[...svar.values()], valda_domaner:VALDA})
+    });
+    const j = await r.json();
+    if (j.next) location.href = j.next;
+  });
+
+  visa(0);
+})();
+</script>
+
+{% endblock %}

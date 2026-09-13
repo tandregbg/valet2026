@@ -212,3 +212,45 @@ table.enkel td.num{text-align:right; font-variant-numeric:tabular-nums}
 .knapp:hover{border-color:var(--accent)}
 .knapp-primar{background:var(--accent); border-color:var(--accent); color:#fff}
 @media (max-width:760px){ .granskrutnat{grid-template-columns:1fr} }
+
+/* ---------- valkompass (CR-001) ---------- */
+.domankort{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  gap:9px; margin-bottom:18px}
+.domankort-item{display:flex; flex-direction:column; gap:3px; cursor:pointer;
+  padding:12px 14px; background:var(--yta); border:1px solid var(--linje);
+  border-left:3px solid var(--dfarg,var(--linje-stark));
+  border-radius:var(--radie); transition:border-color .1s}
+.domankort-item:hover{border-color:var(--accent)}
+.domankort-item input{position:absolute; opacity:0; pointer-events:none}
+.domankort-item:has(input:checked){outline:2px solid var(--accent);
+  outline-offset:-2px; background:color-mix(in srgb,var(--accent) 6%,var(--yta))}
+.domankort-item.ej-valbar{opacity:.42; cursor:not-allowed}
+.domankort-namn{font-size:13.5px; font-weight:600}
+.domankort-antal{font-size:11px; color:var(--svag)}
+.kompassrad{display:flex; align-items:center; justify-content:space-between;
+  gap:14px; flex-wrap:wrap}
+
+.fragehuvud{margin-bottom:20px}
+.progressbar{height:4px; background:var(--linje); border-radius:2px;
+  overflow:hidden; margin-top:7px}
+.progressfyll{height:100%; background:var(--accent); width:0;
+  transition:width .18s ease}
+.fragetext{font-size:19px; line-height:1.45; margin:10px 0 22px;
+  max-width:34ch; font-weight:500}
+.skalarad{display:grid; grid-template-columns:repeat(5,1fr); gap:7px;
+  max-width:660px; margin-bottom:18px}
+.skalaknapp{display:flex; flex-direction:column; align-items:center; gap:5px;
+  padding:13px 7px; cursor:pointer; background:var(--yta);
+  border:1px solid var(--linje-stark); border-radius:var(--radie);
+  color:var(--text); font:inherit; transition:border-color .1s}
+.skalaknapp:hover{border-color:var(--accent)}
+.skalaknapp.vald{background:var(--accent); border-color:var(--accent); color:#fff}
+.skalasiffra{font-size:17px; font-weight:700; font-variant-numeric:tabular-nums}
+.skalaetikett{font-size:10.5px; line-height:1.3; text-align:center; opacity:.85}
+.fragerad{display:flex; gap:9px}
+@media (max-width:620px){
+  .skalarad{grid-template-columns:repeat(5,1fr); gap:4px}
+  .skalaetikett{display:none}
+  .skalaknapp{padding:15px 4px}
+  .fragetext{font-size:17px}
+}
