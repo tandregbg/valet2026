@@ -1,16 +1,16 @@
-# Från 108 000 ord till en fråga man kan ställa
+# Från 108 000 ord till ett navigerbart underlag
 
-## Hur åtta valmanifest blev ett navigerbart underlag på fyrtio minuter, och varför det sista steget ändå kräver en människa
+## Hur åtta heterogena dokument strukturerades på fyrtio minuter, och varför det sista steget ändå kräver en människa
 
-*Teknisk genomgång av val2026-projektet. Skriven 2026-09-13.*
+*Teknisk genomgång av en databearbetningspipeline. Skriven 2026-09-13.*
 
 ---
 
 ## Vad det här handlar om
 
-Åtta svenska riksdagspartier publicerade valmanifest inför valet 13 september
-2026. Tillsammans 269 sidor och 108 523 ord. Frågan var enkel: vad står det
-faktiskt i dem, och var är partierna tysta?
+Åtta organisationer publicerade var sitt programdokument samtidigt.
+Tillsammans 269 sidor och 108 523 ord, i åtta olika format och med åtta olika
+egna kapitelindelningar. Uppgiften: gör dem jämförbara.
 
 Den här artikeln beskriver hur materialet gick från åtta PDF-filer till en
 struktur man kan ställa frågor mot. Den beskriver också var processen gick
@@ -21,23 +21,23 @@ två återvändsgränder och ett allvarligt fel som upptäcktes av en människa,
 inte av maskinen.
 
 > **Om artikelns karaktär.** Det här är en teknisk genomgång av en
-> databearbetningsprocess. Den innehåller siffror om partiernas manifest,
-> eftersom det är materialet pipelinen bearbetar — men den utvärderar inte
-> politiken, rangordnar inte partier och rekommenderar inget.
+> databearbetningsprocess. Korpusen råkar bestå av valmanifest, men artikeln
+> handlar om pipelinen, inte om innehållet i dokumenten.
 >
-> Siffrorna är inte heller lämpliga att lyfta ur sitt sammanhang. De bygger på
-> en heuristik där 40% av raderna vilar på en enda nyckelordsträff, ett
-> redaktionellt beslut om vilka dokument som ingår (se fas 1), och en taxonomi
-> jag konstruerat själv. De beskriver **min pipelines utdata**, inte objektiva
-> egenskaper hos partierna. Läs dem som exempel på vad processen producerar,
-> och gå till källtexten i `manifest/` innan du citerar något som ett faktum
-> om ett parti.
+> Därför redovisas inga resultat per dokument. Där ett exempel behövs för att
+> förklara ett tekniskt problem används källorna anonymiserade. Siffror som
+> förekommer beskriver **pipelinens utdata** — hur många rader den producerade,
+> hur många som var felaktiga — inte egenskaper hos källorna.
+>
+> Samma process fungerar på vilken heterogen dokumentsamling som helst:
+> myndighetsremisser, leverantörsavtal, forskningsrapporter. Valmanifesten
+> var råkorpusen för att de publicerades samtidigt och är jämförbara i form.
 
 **Sammanfattning av arbetsdelningen:**
 
 | Steg | Vem | Tid |
 |------|-----|-----|
-| Hämtning av åtta manifest | Maskin | ~10 min |
+| Hämtning av åtta dokument | Maskin | ~10 min |
 | Taxonomidesign | Människa (med maskin som bollplank) | ~5 min |
 | Segmentering + taggning | Maskin | ~8 min |
 | App | Maskin | ~12 min |
@@ -52,30 +52,29 @@ Det sista steget är artikelns poäng.
 
 ### Beslut: bara förstahandskällor
 
-Första beslutet var att inte använda sammanfattningar, valkompasser eller
-nyhetsartiklar. Bara partiernas egna dokument från deras egna domäner.
+Första beslutet var att inte använda sammanfattningar, sammanställningar eller
+nyhetsartiklar. Bara utgivarnas egna dokument från deras egna domäner.
 
-Praktiskt innebar det domänbegränsad sökning per parti: sök efter
-Socialdemokraternas valmanifest, men bara på socialdemokraterna.se. Det tog
-bort hela klassen av problem där en välmenande sammanfattning smyger in som
-källa.
+Praktiskt innebar det domänbegränsad sökning per källa: sök efter dokumentet,
+men bara på utgivarens eget domännamn. Det tar bort hela klassen av problem
+där en välmenande sammanfattning smyger in som källa.
 
 Sex av åtta gick på en gång. Två gjorde motstånd, och båda är lärorika.
 
-### Problem 1: Centerpartiet publicerar inget PDF
+### Problem 1: en källa publicerade inget PDF
 
-C:s manifest "Sverige kan mer" med 328 reformförslag finns bara som
-webbplats. Ingen nedladdningsbar fil någonstans.
+Ett av dokumenten, med 328 numrerade förslag, fanns bara som webbplats. Ingen
+nedladdningsbar fil någonstans.
 
 Sajten visade sig vara WordPress, vilket betyder ett publikt REST API:
 
 ```
-https://val2026.centerpartiet.se/wp-json/wp/v2/pages?per_page=100
+https://<utgivarens-domän>/wp-json/wp/v2/pages?per_page=100
 ```
 
-Det gav en lista över 34 sidor. Femton av dem utgjorde manifestet: sju
-temaområden plus deras respektive "det här vill vi"-fördjupningar. Resten var
-quiz, valfilmer och kampanjsidor.
+Det gav en lista över 34 sidor. Femton av dem utgjorde dokumentet: sju
+temaområden plus deras respektive fördjupningar. Resten var kampanjmaterial
+utan sakinnehåll.
 
 Att hämta strukturerat via API:et i stället för att skrapa HTML gav ren text
 utan navigationsskräp. 22 982 ord.
@@ -84,10 +83,9 @@ utan navigationsskräp. 22 982 ord.
 och de flesta moderna CMS exponerar ett som standard. Det är nästan alltid
 renare data.
 
-### Problem 2: Vänsterpartiet var helt blockerat
+### Problem 2: en källa var helt blockerad
 
-Hela domänen vansterpartiet.se svarade HTTP 403 på allt automatiserat.
-Cloudflare.
+En av utgivarnas domäner svarade HTTP 403 på allt automatiserat. Cloudflare.
 
 Ordningen jag försökte i, med resultat:
 
@@ -115,10 +113,10 @@ const b = await r.arrayBuffer();
 Två småsaker kostade tid: zsh tolkade `--remote-allow-origins=*` som en glob
 (måste citeras), och websocket-biblioteket skickade Origin-headern dubbelt.
 
-**Viktig avgränsning:** det här är ett publikt dokument som partiet självt
-distribuerar. Blockeringen är ett generellt bot-skydd, inte ett uttryck för
-att dokumentet vore hemligt. Hade det funnits en `robots.txt`-regel eller
-inloggning hade svaret varit att sluta.
+**Viktig avgränsning:** det här är ett publikt dokument som utgivaren själv
+distribuerar gratis. Blockeringen är ett generellt bot-skydd, inte ett uttryck
+för att dokumentet vore skyddat. Hade det funnits en `robots.txt`-regel, en
+inloggning eller villkor som förbjöd det hade svaret varit att sluta.
 
 ### Textextraktion
 
@@ -131,49 +129,61 @@ dokument. Utan flaggan blandas spalterna ihop och meningarna blir obegripliga.
 
 Resultat efter fas 1:
 
-| Parti | Dokument | Sidor | Ord |
-|-------|----------|------:|----:|
-| S | Valprogram 2026 | 21 | 7 088 |
-| M | Valmanifest 2026 | 50 | 16 810 |
-| SD | Valplattform 2026 | 12 | 3 057 |
-| C | Valmanifest 2026 (webb) | - | 22 982 |
-| V | Valmanifest 2026 | 21 | 5 377 |
-| KD | Valmanifest 2026 | 10 | 4 646 |
-| MP | Valmanifest 2026 | 9 | 3 222 |
-| L | Valmanifest 2026 | 40 | 9 478 |
+| Källa | Format | Sidor | Ord |
+|-------|--------|------:|----:|
+| A | PDF | 21 | 7 088 |
+| B | PDF | 50 | 16 810 |
+| C | PDF | 12 | 3 057 |
+| D | Webb (REST API) | - | 22 982 |
+| E | PDF (bakom bot-skydd) | 21 | 5 377 |
+| F | PDF | 10 | 4 646 |
+| G | PDF | 9 | 3 222 |
+| H | PDF | 40 | 9 478 |
 
-Ett redaktionellt beslut här: MP:s valmanifest är bara 9 sidor. I en
-jämförelse hade de blivit kraftigt underrepresenterade. Jag hämtade därför
-även deras politiska handlingsprogram 2026-2030 (106 sidor, 35 546 ord).
+Spännvidden är poängen: 3 000 till 23 000 ord, och en källa som inte ens
+publicerade en fil. Det är den sortens heterogenitet som gör jämförelsen svår.
+
+**Ett redaktionellt beslut värt att notera som mönster.** Ett av dokumenten
+var bara 9 sidor, medan det längsta var 50. I en jämförelse hade den korta
+källan blivit kraftigt underrepresenterad, så jag hämtade även utgivarens
+längre programdokument (106 sidor) som komplement.
 
 Det är ett *tolkningsbeslut*, inte ett tekniskt. Det påverkar alla siffror
-nedströms: MP har 456 förslag i den slutliga datan, näst flest av alla, till
-stor del för att jag lade till ett dokument de andra inte fick. Sådana beslut
-måste dokumenteras, annars blir jämförelsen tyst missvisande.
+nedströms: den källan hamnade näst högst i antal extraherade enheter, till
+stor del för att den fick bidra med ett dokument de andra inte fick.
+
+Sådana beslut är oundvikliga när korpusen är heterogen. Poängen är inte att
+undvika dem utan att dokumentera dem, annars blir jämförelsen tyst
+missvisande på ett sätt ingen kan upptäcka i efterhand.
 
 ---
 
 ## Fas 2: Taxonomin (10:29-10:34)
 
-### Varför partiernas egna rubriker inte går att använda
+### Varför källornas egna rubriker inte går att använda
 
-Det första jag gjorde var att titta på hur partierna själva strukturerar sina
-manifest. Det avgjorde hela designen:
+Det första jag gjorde var att titta på hur dokumenten själva är strukturerade.
+Det avgjorde hela designen:
 
-| Parti | Egen toppnivå | Problem |
-|-------|---------------|---------|
-| S | 3 kapitel | Inget heter klimat |
-| M | Löpande prosa | Ingen numrering alls |
-| SD | ~35 platta rubriker | Ingen gruppering |
-| C | 7 teman | - |
-| V | 3 prioriteringar | Allt annat nedtryckt |
-| KD | 4 "hörnstenar" | Värderingar som toppnivå |
-| MP | 15 kapitel | Djurvälfärd på toppnivå |
-| L | 8 kapitel | - |
+| Källa | Egen toppnivå | Konsekvens |
+|-------|---------------|------------|
+| A | 3 kapitel | Ett stort sakområde saknar helt egen rubrik |
+| B | Löpande prosa | Ingen numrering alls |
+| C | ~35 platta rubriker | Ingen gruppering, ingen hierarki |
+| D | 7 teman | Hanterbar |
+| E | 3 prioriteringar | Allt utanför dessa tre är nedtryckt |
+| F | 4 "hörnstenar" | Kategorier som inte är sakområden |
+| G | 15 kapitel | Ett smalt specialområde på toppnivå |
+| H | 8 kapitel | Hanterbar |
 
-Att MP har djurvälfärd på toppnivå och V har tre prioriteringar är i sig
-intressant. Men det gör indelningarna obrukbara som gemensam axel. Sorterar
-man efter partiets egen struktur mäter man deras retorik, inte deras politik.
+Varje utgivare har strukturerat sitt dokument efter den berättelse de vill
+förmedla. Det är rationellt av dem — och det gör indelningarna obrukbara som
+gemensam axel.
+
+**Den generella principen:** källans egen struktur är optimerad för källans
+syfte. Sorterar man efter den mäter man deras framställning, inte deras
+innehåll. Det gäller lika mycket för leverantörsofferter och årsredovisningar
+som för den här korpusen.
 
 ### Lösningen: två lager
 
@@ -182,18 +192,22 @@ kapitelindelning: 12 domäner, 60 subdomäner. Ekonomi och skatt,
 arbetsmarknad, vård och välfärd, skola, brott, migration, klimat, bostad,
 familj, försvar, demokrati, landsbygd.
 
-**Lager 2, inramningen.** Partiets egen rubrik sparas på varje förslag i
-fältet `partiets_egen_rubrik`.
+**Lager 2, inramningen.** Källans egen rubrik sparas på varje enhet i fältet
+`partiets_egen_rubrik`.
 
-Det andra lagret är det som gör analysen intressant. Skillnaden mellan vad ett
-förslag *handlar om* och var partiet *väljer att placera det* är ett resultat
-i sig. När V rubricerar nio förslag under "STOPPA RÅNET AV HUSHÅLLEN" och de
-sakligt spänner över fem domäner, är det inramning i arbete.
+Det andra lagret är det som gör analysen intressant. Skillnaden mellan vad en
+enhet *handlar om* och var källan *väljer att placera den* är ett resultat i
+sig. När en källa samlar nio förslag under en slagkraftig rubrik och de
+sakligt spänner över fem olika domäner, är det inramning i arbete — mätbar,
+utan att man behöver ha någon åsikt om innehållet.
 
 ### Två designval värda att motivera
 
-**Varför klimat och landsbygd är separata domäner.** Annars kollapsar C:s och
-SD:s landsbygdspolitik in i klimatpolitik, och skillnaden mellan dem försvinner.
+**Varför två närliggande domäner hölls isär.** Vissa källor behandlar
+angränsande sakområden under samma rubrik. Slås domänerna ihop försvinner
+skillnaden mellan källor som faktiskt skriver om olika saker. Sådana
+gränsdragningar kräver sakkunskap om materialet — de går inte att härleda ur
+datan.
 
 **Varför "vinster i välfärden" är en subdomän, inte en domän.** Den är en
 konfliktaxel, inte ett sakområde. Den hanteras bättre i det tvärgående lagret.
@@ -203,15 +217,15 @@ konfliktaxel, inte ett sakområde. Den hanteras bättre i det tvärgående lagre
 Ett förslag är den atomära enheten, inte ett kapitel:
 
 ```yaml
-id: KD-0142
-parti: KD
+id: F-0142
+parti: F                 # källidentifierare
 doman: valfard-halsa
 subdoman: sjukvard-organisation
 axlar: [{axel: centralisering, riktning: a}]
 typ: reform              # reform | mal | princip | kritik
 kvantifiering: ["2 000 kronor"]
-text: "Gör vården till ett nationellt ansvar och avveckla de 21 regionerna"
-partiets_egen_rubrik: "2. VÄLFÄRDENS KÄRNA FÖRST"
+text: "<förslagets text, oförändrad från källan>"
+partiets_egen_rubrik: "<källans egen rubrik ovanför stycket>"
 traffsakerhet: 3
 granskad: false
 ```
@@ -224,15 +238,15 @@ vägen ut i gränssnittet.
 
 ## Fas 3: Segmentering och taggning (10:34-10:42)
 
-### Varför det behövdes åtta parsers
+### Varför det behövdes åtta olika parsers
 
 Ett "förslag" ser typografiskt olika ut i varje dokument:
 
-- **KD** använder punktlistor med ett specialtecken som bullet
-- **L** har numrerade förslag: `12. Rubrik. Brödtext...`
-- **V** har fetstilta underrubriker följt av stycken
-- **MP och C** har löpande kapiteltext
-- **SD, M, S** är styckebaserade utan tydliga markörer
+- En källa använder punktlistor med ett ovanligt specialtecken som bullet
+- En har numrerade förslag: `12. Rubrik. Brödtext...`
+- En har fetstilta underrubriker följt av stycken
+- Två har löpande kapiteltext utan listor
+- Tre är styckebaserade utan tydliga markörer alls
 
 Det gick inte att skriva en generell parser. Jag skrev åtta, med gemensam
 normalisering:
@@ -277,13 +291,14 @@ Utelämnande framför gissning. Bortfallet blev 2-21% per parti och redovisas
 
 ### Första iterationen och en första rättning
 
-Första körningen gav 32% bortfall för KD. Diagnosen visade välformulerade
-förslag som föll bort på ordglapp:
+Första körningen gav 32% bortfall för en av källorna. Diagnosen visade
+välformulerade förslag som föll bort på ordglapp:
 
 > "Maxtaxa för kommunala avgifter för bygglov."
 
-Uppenbart bostadspolitik. Men nyckelordet var "bostadsbyggande" och texten sa
-"bygglov". Rubriken ovanför sa "SÅ KAN FLER FÅ EN EGEN BOSTAD".
+Uppenbart bostadsfrågor. Men nyckelordet var "bostadsbyggande" och texten sa
+"bygglov". Rubriken ovanför löd "SÅ KAN FLER FÅ EN EGEN BOSTAD" — signalen
+fanns, men på fel rad.
 
 Två rättningar:
 
@@ -304,18 +319,19 @@ Flask, 227 rader. Fyra vyer, var och en med en distinkt fråga:
 
 | Vy | Fråga |
 |----|-------|
-| `/` | Vilka domäner täcker partierna, och var är de tysta? |
-| `/doman/<id>` | Vad säger de faktiskt inom ett sakområde? |
+| `/` | Hur fördelar sig varje källas innehåll över domänerna? |
+| `/doman/<id>` | Vad står det faktiskt inom ett sakområde? |
 | `/axlar` | Vilka mönster skär tvärs över domängränserna? |
-| `/inramning` | Hur ramar partiet in sin egen politik? |
+| `/inramning` | Hur förhåller sig källans egen rubrik till sakfrågan? |
 
 ### Ett designbeslut som ändrades
 
 Täckningsmatrisens bakgrundsfärg byggde först på absolut antal förslag,
 normaliserat mot radens högsta värde. Det var fel, av en subtil anledning:
 
-C har 552 förslag, V har 96. Färgen mätte alltså dokumentlängd, inte
-prioritering. C färgades mörkt nästan överallt utan att det sade något.
+Den längsta källan har 552 extraherade enheter, den kortaste 52. Färgen mätte
+alltså dokumentlängd, inte fördelning. Den längsta källan färgades mörkt nästan
+överallt utan att det sade något.
 
 Värre: den lilla siffran i cellen visade *andel av eget manifest* medan färgen
 visade *absolut antal*. Två olika mått i samma ruta.
@@ -325,47 +341,61 @@ färg och siffra samma sak.
 
 ### När en visualisering ljuger
 
-Konfliktaxlarna var tänkta som positionsskalor: partierna utplacerade på en
-linje mellan "mer offentligt" och "mer marknad".
+Konfliktaxlarna var tänkta som positionsskalor: källorna utplacerade på en
+linje mellan två motpoler, till exempel "mer offentligt" och "mer marknad".
 
-Första körningen placerade V och MP på marknadssidan. Uppenbart fel.
+Första körningen placerade flera källor på fel sida av linjen — källor vars
+dokument uttryckligen argumenterar mot en position hamnade som anhängare av
+den.
 
-Orsaken: nyckelorden räknade *omnämnanden*, inte *ståndpunkt*. V skriver ofta
-"vinstjakt" och "marknadsstyrning" — just för att de är emot.
+Orsaken är generell och värd att förstå: **nyckelord räknar omnämnanden, inte
+ståndpunkt.** Den som argumenterar emot något skriver ordet oftare än den som
+är likgiltig inför det. En motståndare till ett fenomen nämner fenomenet i
+varje mening; en anhängare kan beskriva samma sak med helt andra ord.
+
+Frekvens är alltså en usel proxy för hållning. Det gäller varje textkorpus där
+man försöker mäta attityd med ordlistor.
 
 Jag försökte med negationsdetektion:
 
 ```python
 NEKANDE = re.compile(r"\b(avskaffa\w*|stoppa\w*|förbjud\w*|nej till|...)\b")
-# "avskaffa lagen om valfrihet" -> vänder riktningen
+# "avskaffa lagen om X" -> vänder riktningen för X
 ```
 
-Det rättade riktningen, men inte problemet. Ordet "marknad" matchade
-fortfarande inuti "marknadsstyrning".
+Det rättade riktningen, men inte problemet. Ett enstaka ord matchade
+fortfarande inuti längre sammansättningar med annan innebörd.
 
-Slutlig lösning: bara entydiga flerordsfraser. "Stoppa vinstjakten", "fritt
-vårdval". Det gav korrekta riktningar, men bara 1-4 träffar per parti.
+Slutlig lösning: bara entydiga flerordsfraser, där formuleringen i sig bär
+ståndpunkten. Det gav korrekta riktningar — men bara 1-4 träffar per källa.
 
 **Och där togs beslutet som jag tycker är det viktigaste i hela projektet:**
 axelvyn visar inte längre positioner. Den visar de enskilda beläggen, sida vid
 sida, med en förklaring av varför det inte finns någon skala.
 
-En positionsskala hade sett mer auktoritativ ut än underlaget tillåter. Det är
-precis den sortens visualisering som får folk att tro på siffror som inte
-bär vikten. Att ta bort den var rätt beslut även om den såg snyggare ut.
+En positionsskala hade sett mer auktoritativ ut än underlaget tillåter. Fyra
+datapunkter utplacerade på en linje ser exakt lika övertygande ut som fyra
+hundra — det är visualiseringens problem, inte betraktarens.
+
+Att ta bort den var rätt beslut även om den såg snyggare ut. **Regeln jag tog
+med mig: om underlaget inte bär formen, byt form — förfina inte siffrorna
+tills de ser tillräckliga ut.**
 
 ---
 
 ## Fas 5: Felet som en människa hittade
 
-Appen var klar. Matrisen såg bra ut. Då kom en fråga:
+Appen var klar. Matrisen såg bra ut. Då kom en fråga från någon som tittade
+på den:
 
-> "jag förstår inte de bruna bakgrundsfärgerna som är rakt över för ekonomi
-> och skatt specifikt?"
+> "jag förstår inte de bruna bakgrundsfärgerna som är rakt över för [den här
+> domänen] specifikt?"
 
-Raden "Ekonomi och skatt" var mörk för *alla åtta partier*. Det är ett
-misstänkt mönster. Åtta partier med olika ideologi bör inte ägna exakt lika
-stor andel av sina manifest åt samma sak.
+En av raderna var mörk för *alla åtta källor*. Det är ett misstänkt mönster:
+åtta oberoende dokument, skrivna av olika organisationer med olika syften, bör
+inte fördela sig identiskt över en domän.
+
+Att mönstret var *för* regelbundet var hela signalen.
 
 Diagnosen tog 30 sekunder:
 
@@ -386,8 +416,8 @@ vanliga svenska ord:
 - männ**isk**ors → *människors*
 - europe**isk** → *europeisk*
 
-Ett förslag om Östersjöfiske, ett om rent dricksvatten och ett om Mellanöstern
-låg alla under "kapital och förmögenhet".
+Ett stycke om fiske, ett om dricksvatten och ett om utrikespolitik låg alla
+under "kapital och förmögenhet".
 
 **214 av 221 träffar i subdomänen var rena felträffar.**
 
@@ -442,9 +472,9 @@ tre timmar.**
 
 ---
 
-## Vad datan visar, och vad den inte visar
+## Vad pipelinen producerade
 
-Efter rättningen, 1 528 förslag:
+Efter rättningen, 1 528 extraherade enheter fördelade över taxonomin:
 
 ```
   225 (14,7%)  ekonomi-skatt
@@ -465,40 +495,44 @@ Fördelningen är jämn över de tre största domänerna, vilket i sig är ett
 rimlighetstest: en pipeline som producerar en dominerande domän bör
 misstänkas (se fas 5).
 
-**En not om att läsa enskilda celler.** Matrisen inbjuder till påståenden av
-typen "parti X ägnar mer utrymme åt A än åt B". Sådana avläsningar är
-tekniskt korrekta men analytiskt svaga, av tre skäl som alla följer av
-metoden ovan:
+**Varför inga siffror per källa redovisas här.** Det vore tekniskt enkelt att
+bryta ned tabellen per dokument. Jag gör det inte, och skälet är metodologiskt
+snarare än försiktighet:
 
-- Andelen mäter textmängd, inte prioritet. Ett parti kan avhandla sin
-  viktigaste fråga på två meningar.
-- Segmenterarens granularitet skiljer sig mellan partier. Ett dokument med
-  punktlistor ger fler och kortare "förslag" än ett med löpande prosa,
-  vid samma politiska innehåll.
+- Andelen mäter textmängd, inte vikt. En källa kan avhandla sitt viktigaste
+  ärende på två meningar och ägna tjugo sidor åt bakgrund.
+- Segmenterarens granularitet skiljer sig mellan källor. Ett dokument med
+  punktlistor ger fler och kortare enheter än ett med löpande prosa, vid
+  identiskt sakinnehåll. Den skillnaden är ett artefakt av typografi.
 - 40% av raderna vilar på en enda nyckelordsträff.
 
-En tom cell betyder **att min heuristik inte hittade några träffar** — inte
-att partiet saknar politik på området. Med 2-21% bortfall och en taxonomi vars
-ordval inte matchar alla partiers språkbruk lika väl är en tom cell minst lika
-ofta ett fel i taggningen som en tystnad i manifestet. Varje sådan cell är en
-hypotes att gå tillbaka till källtexten och pröva, aldrig en slutsats.
+Tre osäkerheter som var för sig är hanterbara, men som multiplicerat gör
+jämförelser mellan enskilda celler meningslösa.
 
-Det är också därför appen länkar varje cell direkt till de underliggande
-förslagen med källhänvisning. Verktyget är byggt för att leda tillbaka till
-texten, inte för att ersätta den.
+En tom cell betyder **att heuristiken inte hittade några träffar** — inte att
+källan saknar innehåll på området. Med 2-21% bortfall och en taxonomi vars
+ordval inte matchar alla källors språkbruk lika väl är en tom cell minst lika
+ofta ett fel i taggningen som en faktisk lucka i dokumentet.
+
+Varje cell är en hypotes att gå tillbaka till källtexten och pröva, aldrig en
+slutsats. Därför länkar appen varje cell direkt till de underliggande
+styckena med källhänvisning. **Verktyget är byggt för att leda tillbaka till
+texten, inte för att ersätta den** — och den designprincipen är överförbar till
+varje analysverktyg som bearbetar dokument någon annan har skrivit.
 
 ### Tre mått som inte höll
 
 Ärlighet om vad som inte fungerade:
 
-**Kvantifieringsmåttet.** Tanken var att mäta löftesprecision genom att räkna
-förslag som innehåller en siffra. Det fångade bara 60 av 1 528 rader (3,9%).
-För glest för att säga något meningsfullt. M sticker ut med 16% mot övrigas
-2-6%, men underlaget är 21 rader. Det är för tunt att dra slutsatser från.
+**Kvantifieringsmåttet.** Tanken var att mäta hur konkreta utfästelserna är
+genom att räkna enheter som innehåller en siffra. Det fångade bara 60 av
+1 528 rader (3,9%). En källa avviker uppåt, men på ett underlag av 21 rader.
+För glest för att bära någon slutsats alls — spridningen mellan källor är väl
+inom vad slumpen förklarar vid den urvalsstorleken.
 
-**Utsagetyperna.** "Princip" utgör 56% av alla rader, vilket säger mer om att
-heuristiken kräver ett tydligt verb för att klassa något som reform än om
-partiernas faktiska skrivsätt.
+**Utsagetyperna.** "Princip" utgör 56% av alla rader. Det säger mer om att
+heuristiken kräver ett tydligt verb för att klassa något som konkret åtgärd än
+om källornas faktiska skrivsätt.
 
 **Konfliktaxlarna som skala.** Se fas 4.
 
@@ -508,9 +542,8 @@ som om det höll.
 
 ### Den grundläggande begränsningen
 
-Andelen mäter hur mycket **text** ett parti ägnar en fråga. Det är inte samma
-sak som hur viktig den är för dem. Ett parti kan säga något avgörande på två
-meningar.
+Andelen mäter hur mycket **text** en källa ägnar en fråga. Det är inte samma
+sak som hur viktig den är. En källa kan säga något avgörande på två meningar.
 
 40% av raderna vilar fortfarande på en enda nyckelordsträff. `granskad` är
 `false` på alla 1 528.
@@ -523,14 +556,17 @@ Mönstret gäller långt utanför valmanifest.
 
 **1. Källdata, förstahands och verifierad.** Inga sammanfattningar. Checksummor
 och URL:er för varje dokument. Det som ser ut som byråkrati i början är det som
-gör att man kan gå tillbaka och kontrollera ett påstående i slutet.
+gör att man kan gå tillbaka och kontrollera ett påstående i slutet — och det
+är enda sättet att kunna dementera ett felaktigt påstående om sin egen analys.
 
 **2. En neutral struktur som inte kommer från källan.** Källans egen indelning
-är nästan alltid organiserad efter källans intressen. Använder man den mäter
-man deras berättelse. Bygg en egen axel, och spara källans som separat data.
+är nästan alltid organiserad efter källans syfte. Använder man den mäter man
+deras framställning. Bygg en egen axel — och spara källans som separat data,
+för avvikelsen mellan de två är ofta det mest informativa i hela materialet.
 
-**3. Atomära enheter, inte dokument.** Ett förslag, inte ett kapitel. Det är
-det som gör materialet filtrerbart.
+**3. Atomära enheter, inte dokument.** Ett stycke eller en punkt, inte ett
+kapitel. Det är det som gör materialet filtrerbart — och som gör att varje
+påstående kan spåras till en specifik rad i en specifik källa.
 
 **4. Deterministisk bearbetning där det går.** Inte för att det är
 träffsäkrare, utan för att det är felsökbart. När något ser fel ut vill man
@@ -550,25 +586,30 @@ Maskinen är bra på det mekaniska: hämta, extrahera, segmentera, tagga,
 rendera. 108 523 ord blev navigerbara på cirka 40 minuter. Den delen är inte
 svår längre.
 
-Människan äger de tre besluten som faktiskt formade resultatet:
+Människan äger de fyra besluten som faktiskt formade resultatet:
 
-- **Taxonomidesignen.** Att klimat och landsbygd måste vara separata domäner,
-  annars försvinner skillnaden mellan C och MP. Det är sakkunskap.
+- **Taxonomidesignen.** Vilka sakområden som måste hållas isär för att en
+  verklig skillnad inte ska försvinna. Det är sakkunskap om materialet, inte
+  om data.
 - **Att ta bort positionsskalan.** Att medvetet göra visualiseringen mindre
   imponerande för att underlaget inte bar den. Det är omdöme.
-- **Att se att en brun rad var fel.** Det är misstänksamhet mot sitt eget
-  verktyg.
+- **Att se att en rad var fel.** Att reagera på ett mönster som var för
+  regelbundet för att vara äkta. Det är misstänksamhet mot sitt eget verktyg.
+- **Att avgöra vad som inte ska redovisas.** Att en nedbrytning är tekniskt
+  möjlig betyder inte att underlaget bär den.
 
-Inget av de tre är svårt i teknisk mening. Alla tre kräver någon som håller
+Inget av de fyra är svårt i teknisk mening. Alla fyra kräver någon som håller
 frågan "stämmer det här?" levande medan maskinen producerar.
 
-Det sista är hela poängen. Verktyget gör materialet navigerbart. Det drar inga
-slutsatser. Det kan inte avgöra om ett mönster är verkligt eller ett artefakt
-av dess egen implementation.
+Det är hela poängen. Verktyget gör materialet navigerbart. Det drar inga
+slutsatser, och det kan inte avgöra om ett mönster är verkligt eller ett
+artefakt av dess egen implementation. Den skillnaden är inte en fråga om mer
+data eller bättre modell — den kräver någon som vet vad materialet handlar om
+och som är beredd att misstro sitt eget resultat.
 
-Och nej — ingenting i det här projektet säger något om hur man bör rösta. Det
-var aldrig meningen. Det gör manifesten läsbara sida vid sida. Läsningen är
-fortfarande läsarens jobb.
+Pipelinen gör dokumenten läsbara sida vid sida. Läsningen är fortfarande
+läsarens jobb, och den delen är inte en brist i verktyget utan dess
+avgränsning.
 
 ---
 
@@ -576,8 +617,8 @@ fortfarande läsarens jobb.
 
 | | |
 |---|---|
-| Källmaterial | 8 valmanifest, 269 sidor, 108 523 ord |
-| Extraherade förslag | 1 528 |
+| Källmaterial | 8 programdokument, 269 sidor, 108 523 ord |
+| Extraherade enheter | 1 528 |
 | Taxonomi | 12 domäner, 60 subdomäner, 5 konfliktaxlar |
 | Kod | 1 693 rader (468 extraktion, 227 app, resten mallar/stil) |
 | Beroenden | `flask`, `pyyaml`, `pdftotext` (poppler) |
@@ -592,8 +633,8 @@ databearbetningen — medvetet, se fas 3.
 **Repostruktur:**
 
 ```
-val2026/
-├── manifest/      Källdokument + INDEX.md med checksummor
+projekt/
+├── manifest/      Källdokument + INDEX.md med checksummor och URL:er
 ├── domains/       taxonomi.yaml, extrahera.py, forslag.jsonl
 ├── app/           Flask-app
 ├── CHANGELOG.md   Inklusive felen och rättningarna
