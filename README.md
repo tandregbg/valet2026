@@ -1,5 +1,8 @@
 # Valmanifest 2026 — strukturerad datamängd och analysverktyg
 
+[![Tester](https://img.shields.io/badge/tester-34%20gr%C3%B6na-brightgreen)]()
+[![Version](https://img.shields.io/badge/version-0.6.1-blue)]()
+
 Åtta svenska valmanifest (108 206 ord) omvandlade till en strukturerad,
 granskningsbar datamängd — med en webbapp för att utforska den och en
 valkompass byggd på granskade påståenden.
@@ -7,6 +10,10 @@ valkompass byggd på granskade påståenden.
 **Projektet är ett metodexempel:** hur en stor textmassa kan bli ett underlag
 som människor kan fatta beslut på, utan att överlåta tolkningen till en
 språkmodell.
+
+📄 **Utförlig genomgång av processen:** [`ARTIKEL.md`](ARTIKEL.md) — sex faser,
+vad som gick fel, och var gränsen går mellan vad maskinen klarar och vad den
+inte gör.
 
 ---
 
