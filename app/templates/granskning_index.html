@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block titel %}Granskning &middot; översikt{% endblock %}
+{% block innehall %}
+
+<h1>Redaktionell granskning</h1>
+<p class="ingress">
+  Varje kandidat måste läsas och godkännas av en människa innan den kan bli
+  ett påstående i valkompassen. Maskinen har bara genererat ett utkast.
+</p>
+
+<div class="granskrutnat">
+  <div class="panelblock">
+    <h3>Läge</h3>
+    <table class="enkel">
+      <tr><td>Kvar att granska</td><td class="num"><strong>{{ kvar }}</strong></td></tr>
+      <tr><td>Godkända</td><td class="num">{{ godkanda }}</td></tr>
+      <tr><td>Förkastade</td><td class="num">{{ forkastade }}</td></tr>
+      <tr><td>Totalt</td><td class="num">{{ totalt }}</td></tr>
+    </table>
+    {% if kvar %}
+    <p style="margin-top:12px">
+      <a class="knapp knapp-primar" href="{{ url_for('granskning.nasta') }}">
+        Granska nästa</a>
+    </p>
+    {% endif %}
+  </div>
+
+  <div class="panelblock">
+    <h3>Per domän (minimum 10 för att kunna väljas)</h3>
+    <table class="enkel">
+      <thead><tr><th>Domän</th><th class="num">Godkända</th><th></th></tr></thead>
+      <tbody>
+      {% for d in status_doman %}
+        <tr>
+          <td><a href="{{ url_for('granskning.nasta', doman=d.doman) }}">{{ d.doman }}</a></td>
+          <td class="num">{{ d.godkanda }}</td>
+          <td>{% if d.klar %}<span class="tagg">klar</span>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -176,3 +176,39 @@ table.enkel td.num{text-align:right; font-variant-numeric:tabular-nums}
 .belagg p{margin:5px 0 0; font-size:12.5px; line-height:1.5; color:var(--text)}
 .dtag{font-size:10.5px; color:var(--svag); margin-left:6px}
 @media (max-width:700px){ .tvasidor{grid-template-columns:1fr} }
+
+/* ---------- granskning (CR-002) ---------- */
+.granskhuvud{display:flex; align-items:baseline; justify-content:space-between;
+  gap:14px; flex-wrap:wrap; margin-bottom:14px}
+.granskstatus{font-size:13px; color:var(--svag); font-variant-numeric:tabular-nums}
+.granskrutnat{display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start}
+.granskkolumn h3{margin:0 0 9px; font-size:13px; font-weight:600; color:var(--svag)}
+.originalruta{background:var(--yta); border:1px solid var(--linje);
+  border-left:3px solid var(--linje-stark); border-radius:var(--radie);
+  padding:13px 15px; font-size:13.5px; line-height:1.6}
+.granskmeta{margin:12px 0 0; font-size:12px}
+.granskmeta dt{color:var(--svag); margin-top:7px}
+.granskmeta dd{margin:2px 0 0}
+.kallatagg{display:inline-block; padding:1px 7px; background:var(--accent);
+  color:#fff; border-radius:2px; font-size:11px; font-weight:700}
+.granskliten{color:var(--svag); font-size:11px}
+.granskfalt{width:100%; padding:10px 12px; font:inherit; font-size:14px;
+  border:1px solid var(--linje-stark); border-radius:var(--radie);
+  background:var(--yta); color:var(--text); resize:vertical}
+.granskfalt:focus{outline:2px solid var(--accent); outline-offset:-1px}
+.granskfalt-en{margin-top:10px; font-size:12.5px}
+.kriterier{background:var(--yta); border:1px solid var(--linje);
+  border-radius:var(--radie); padding:11px 14px; margin-top:11px; font-size:12px}
+.kriterier strong{font-size:12px}
+.kriterier ol{margin:7px 0 0; padding-left:19px; color:var(--svag); line-height:1.55}
+.granskrad{display:flex; gap:9px; align-items:center; margin-top:12px}
+.granskare{width:62px; padding:7px 9px; font:inherit; font-size:12.5px;
+  text-align:center; border:1px solid var(--linje-stark);
+  border-radius:var(--radie); background:var(--yta); color:var(--text)}
+.knapp{padding:8px 17px; font:inherit; font-size:13px; cursor:pointer;
+  border:1px solid var(--linje-stark); border-radius:var(--radie);
+  background:var(--yta); color:var(--text); text-decoration:none;
+  display:inline-block}
+.knapp:hover{border-color:var(--accent)}
+.knapp-primar{background:var(--accent); border-color:var(--accent); color:#fff}
+@media (max-width:760px){ .granskrutnat{grid-template-columns:1fr} }

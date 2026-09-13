@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block titel %}Granskning {{ k.id }}{% endblock %}
+{% block innehall %}
+
+<div class="granskhuvud">
+  <h1>Granskning</h1>
+  <span class="granskstatus">{{ kvar }} kvar av {{ totalt }}</span>
+</div>
+
+{% if k.svag_traff %}
+<div class="varning">
+  <strong>Svag träff.</strong> Den här kandidaten vilar på en enda
+  nyckelordsträff i taggningen. Kontrollera särskilt att domänen stämmer
+  &mdash; det är i den här kategorin feltaggningar döljer sig.
+</div>
+{% endif %}
+
+<div class="granskrutnat">
+
+  <div class="granskkolumn">
+    <h3>Originaltext ur källan</h3>
+    <div class="originalruta">{{ k.originaltext }}</div>
+    <dl class="granskmeta">
+      <dt>Domän</dt><dd>{{ k.doman }} / {{ k.subdoman }}</dd>
+      <dt>Källor</dt>
+      <dd>
+        {% for kalla in k.kallor %}
+        <span class="kallatagg">{{ kalla.parti }}</span>
+        {% endfor %}
+        <span class="granskliten">({{ k.kallor|length }} st)</span>
+      </dd>
+    </dl>
+  </div>
+
+  <div class="granskkolumn">
+    <h3>Påstående att gradera</h3>
+    <form method="post"
+          action="{{ url_for('granskning.beslut', kandidat_id=k.id, doman=doman) }}">
+      <textarea name="slutlig_text" rows="4" class="granskfalt"
+                autofocus>{{ k.slutlig_text or k.utkast }}</textarea>
+
+      <div class="kriterier">
+        <strong>Kontrollera innan du godkänner:</strong>
+        <ol>
+          {% for kr in kriterier %}<li>{{ kr }}</li>{% endfor %}
+        </ol>
+      </div>
+
+      <input type="text" name="anmarkning" class="granskfalt granskfalt-en"
+             placeholder="Anmärkning, t.ex. vad som utelämnades (frivilligt)">
+
+      <div class="granskrad">
+        <input type="text" name="granskare" value="TA" class="granskare"
+               title="Signatur">
+        <button type="submit" name="handling" value="godkann"
+                class="knapp knapp-primar">Godkänn</button>
+        <button type="submit" name="handling" value="forkasta"
+                class="knapp">Förkasta</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<p class="ingress" style="margin-top:18px">
+  <a href="{{ url_for('granskning.index') }}">Tillbaka till översikten</a>
+</p>
+
+{% endblock %}
