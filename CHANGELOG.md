@@ -4,6 +4,50 @@ Alla ändringar i detta projekt dokumenteras här.
 Format enligt [Keep a Changelog](https://keepachangelog.com/sv/1.1.0/),
 versionshantering enligt [SemVer](https://semver.org/lang/sv/).
 
+## [0.6.0] - 2026-09-13
+
+Påståendebanken redaktionellt granskad, och om-sida med källreferenser,
+processbeskrivning och arbetsdelning. Förberett för publicering.
+
+### Redaktionell granskning (CR-002 steg 2)
+
+De 147 maskingodkända påståendena från v0.5.0 är nu granskade rad för rad
+mot originaltexten.
+
+- **Förkastade: 68.** Trasig PDF-text ("På gator och torg bart sätt"),
+  metatext om dokumentet självt, rubriker och slogans utan graderbart
+  sakinnehåll, lägesbeskrivningar, dubbletter och feltaggningar (ätstörningar
+  under klimat, vinstjakt under försvar).
+- **Omskrivna: 117.** Avsändarens röst och motivering borttagen, en sakfråga
+  per påstående, enhetlig formulering.
+- **Resultat: 122 påståenden.** Verifierat noll partinamn, noll flermeningar,
+  noll över 25 ord, alla spårbara till originaltext.
+
+**8 av 12 domäner är valbara.** Migration, bostad, demokrati och landsbygd
+har under 10 granskade påståenden och kandidatunderlaget är uttömt. De
+markeras ej valbara — en verklig gräns i materialet, inte en lathet.
+
+### Tillagt (CR-005)
+
+- `domains/kallor.yaml` — maskinläsbar källförteckning med URL, landningssida,
+  sidor, ord och SHA256 per dokument, plus hämtningsanmärkningar.
+- Om-sidan omskriven i sex sektioner: källor, processen (åtta steg märkta
+  Kod/Människa), varför inte bara en chatt (sex parvisa jämförelser),
+  arbetsdelningen i fyra lager, datamängden med spårbarhetskedja, brister.
+- README anpassad för publicering på GitHub.
+- 5 nya tester (30 totalt).
+
+### Designprincip på om-sidan
+
+Alla siffror härleds vid rendering ur faktisk data. Ändras datamängden följer
+sidan med. Ett test verifierar att antalet påståenden på sidan matchar
+`pastaenden.jsonl` — en om-sida som blivit inaktuell är värre än ingen.
+
+### Spårbarhet verifierad
+
+Kedjan påstående → källa → originaltext → taggat stycke → utgivarens rubrik →
+källdokument med SHA256 har noll brutna länkar.
+
 ## [0.5.0] - 2026-09-13
 
 Valkompass levererad. CR-001 till CR-004 implementerade i beroendeordning.
