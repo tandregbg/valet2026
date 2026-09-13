@@ -29,7 +29,8 @@ sorteringen inte hittade något, inte att dokumentet är tyst.*
 | Om du vill… | Gå till |
 |---|---|
 | **Förstå metoden** | [`ARTIKEL.md`](ARTIKEL.md) — sex steg, felen kvar |
-| **Se resultatet** | Kör appen (nedan), eller läs `/om` i den |
+| **Prova verktyget** | Kör appen (nedan) → [valkompassen](#valkompassen) på `/kompass` |
+| **Se resultatet** | Täckningsmatrisen på `/`, eller metodsidan `/om` |
 | **Granska datan** | [`domains/pastaenden.jsonl`](domains/pastaenden.jsonl) |
 | **Kontrollera källorna** | [`domains/kallor.yaml`](domains/kallor.yaml) — URL + SHA256 |
 | **Se vad som gick fel** | [`CHANGELOG.md`](CHANGELOG.md) |
@@ -138,6 +139,53 @@ använd en riktig WSGI-server om den någonsin ska exponeras bredare.
 | `/kompass` | Valkompass: gradera 50 påståenden, se överensstämmelse |
 | `/granskning` | Redaktionell granskning av kandidater |
 | `/om` | Källor, process, arbetsdelning och brister |
+
+---
+
+## Valkompassen
+
+Verktyget innehåller en valkompass, och den är byggd för att visa skillnaden
+mellan ett svar och ett underlag.
+
+![Valkompassens domänval](docs/bilder/valkompass.png)
+
+Du väljer upp till tre sakområden, graderar 50 påståenden på en femgradig
+skala, och får se vilka dokument som ligger närmast dina svar. Så långt som
+vilken valkompass som helst.
+
+Skillnaden ligger i vad som händer sedan — och i vad den vägrar göra.
+
+**Varje påstående är spårbart.** De 122 påståendena är inte formulerade av
+mig på fri hand. De är omskrivna från faktiska textstycken i källdokumenten
+och granskade en i taget. Originaltexten följer med hela vägen till
+resultatvyn, så du kan kontrollera att omskrivningen var rimlig.
+
+**Frånvaro tolkas aldrig som motstånd.** Om ett dokument inte innehåller
+något om ett påstående kan det betyda tre saker: utgivaren är emot, de
+prioriterar annat, eller extraktionen missade det. Algoritmen kan inte skilja
+dem åt — så den räknar inte frånvaro som ett nej. Det finns ett enhetstest
+som verifierar just det.
+
+**Procent visas aldrig utan täckning.** En källa med 90 % på 8 belägg är
+inte en bättre matchning än 72 % på 31. Båda talen står alltid tillsammans.
+
+**Fyra områden går inte att välja.** Migration, bostad, demokrati och
+landsbygd har under tio granskade påståenden, och kandidatunderlaget är
+uttömt. De visas gråmarkerade med antalet utskrivet i stället för att fyllas
+ut med svagt material.
+
+Det sista är kanske det tydligaste exemplet på hållningen i hela projektet:
+**det är bättre att ett verktyg säger "det här kan jag inte" än att det
+gissar snyggt.**
+
+Kör den lokalt via `/kompass`. Granskningsgränssnittet ligger på
+`/granskning` om du vill se hur påståendena blev till: **291 kandidater blev
+122 godkända.** De 169 som förkastades var trasig PDF-text, metatext om
+dokumentet självt, rubriker utan graderbart sakinnehåll, dubbletter och
+feltaggningar.
+
+Att över hälften föll bort är inte ett misslyckande — det är vad granskningen
+är till för.
 
 ---
 

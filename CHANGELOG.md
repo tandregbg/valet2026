@@ -4,6 +4,44 @@ Alla ändringar i detta projekt dokumenteras här.
 Format enligt [Keep a Changelog](https://keepachangelog.com/sv/1.1.0/),
 versionshantering enligt [SemVer](https://semver.org/lang/sv/).
 
+## [0.6.3] - 2026-09-13
+
+### Rättat
+
+**Ett test raderade produktionsdata.** `test_kandidater_genereras` körde
+`kandidater.py` skarpt mot projektets datafiler. Skriptet skriver över
+`kandidater.jsonl`, vilket nollställde granskningsstatus på samtliga 291
+kandidater varje gång testsviten kördes.
+
+Effekten var dold eftersom `pastaenden.jsonl` är en separat fil och
+överlevde - appen fungerade, men granskningsvyn visade 291 ogranskade
+kandidater och granskningsarbetet var inte längre spårbart. Upptäcktes när
+siffrorna i README kontrollerades mot datan och tre av fyra inte stämde.
+
+Rättning:
+- Genereringstestet kör nu mot en kopia i en temporär katalog.
+- Nytt regressionstest `test_granskningsstatus_bevaras` som failar om de
+  godkända kandidaterna försvinner.
+- Nytt test `test_pastaenden_speglar_godkanda` som kräver att de två
+  filerna är i synk.
+- Nytt test `test_otillgangliga_domaner_stammer` som härleder listan ur
+  datan i stället för att lita på en statisk fil.
+
+Granskningsstatus återställd: 122 godkända, 169 förkastade.
+`otillgangliga_domaner.json` rättad från 2 till 4 domäner.
+
+**Lärdom:** ett test som anropar ett skript som skriver filer måste köra i
+sandlåda. Annars är testsviten en destruktiv operation.
+
+### Tillagt
+
+- Egen sektion om valkompassen i README, med skärmdump
+  (`docs/bilder/valkompass.png`) och de fyra designbeslut som skiljer den
+  från en vanlig valkompass: spårbara påståenden, frånvaro tolkas aldrig som
+  motstånd, procent visas aldrig utan täckning, och områden med för tunt
+  underlag går inte att välja.
+- Valkompassen tillagd i "Börja här"-tabellen.
+
 ## [0.6.2] - 2026-09-13
 
 ### Publicerat
