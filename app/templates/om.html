@@ -1,87 +1,281 @@
 {% extends "base.html" %}
-{% block titel %}Metod &middot; Valmanifest 2026{% endblock %}
+{% block titel %}Om, källor och metod{% endblock %}
 {% block innehall %}
 
-<h1>Metod och förbehåll</h1>
-
-<div class="varning">
-  <strong>Taggningen är maskinell och oreviderad.</strong> Varje förslag har
-  tilldelats domän genom nyckelordsmatchning mot taxonomin, inte genom
-  läsning. Det ger systematiska fel: en text om krisberedskap kan hamna
-  under &rdquo;kapital och förmögenhet&rdquo; för att ordet &rdquo;lager&rdquo;
-  förekommer. Siffrorna duger för att hitta mönster och tystnader &mdash; inte
-  som belägg för vad ett parti tycker. Kontrollera alltid mot källtexten.
-</div>
-
-<h2>Så är materialet uppbyggt</h2>
+<h1>Om projektet</h1>
 <p class="ingress" style="max-width:70ch">
-  Två lager hålls isär. <strong>Sakfrågan</strong> &mdash; taxonomins
-  {{ 12 }} domäner &mdash; är neutral och följer inget partis egen indelning,
-  vilket gör den jämförbar. <strong>Inramningen</strong> &mdash; partiets egen
-  rubrik &mdash; bevaras på varje rad. Det gör att man kan jämföra både vad
-  partierna föreslår och hur de väljer att presentera det.
-</p>
-<p class="ingress" style="max-width:70ch">
-  Manifesten har olika typografi, så segmenteringen sker med en
-  partispecifik parser per dokument: KD har punktlistor, L har numrerade
-  förslag, MP och C löpande kapiteltext. Därför varierar hur väl
-  &rdquo;ett förslag&rdquo; motsvarar en faktisk politisk åtgärd mellan partierna.
+  Åtta valmanifest, {{ korpus.ord_totalt|replace(',', ' ') }} ord, omvandlade
+  till en strukturerad datamängd som går att ställa frågor mot. Det här är en
+  genomgång av källorna, processen och &mdash; viktigast &mdash; var maskinen
+  gör sitt jobb och var en människa måste göra sitt.
 </p>
 
-<h2>Osäker taggning per parti</h2>
+<nav class="omnav">
+  <a href="#kallor">Källor</a>
+  <a href="#process">Processen</a>
+  <a href="#varfor-inte-chatgpt">Varför inte bara en chatt?</a>
+  <a href="#arbetsdelning">Människa, LLM och kod</a>
+  <a href="#data">Datamängden</a>
+  <a href="#brister">Brister</a>
+</nav>
+
+<!-- ============================================ KÄLLOR -->
+<h2 id="kallor">Källor</h2>
 <p class="ingress">
-  Rader med bara en nyckelordsträff är minst tillförlitliga. Hög andel
-  betyder att partiets språk ligger långt från taxonomins ordval &mdash;
-  inte att partiet är vagt.
+  Samtliga dokument hämtade {{ kallor.hamtad }} från respektive utgivares
+  officiella webbplats. Inga tredjepartssammanfattningar, inga valkompasser,
+  inga nyhetsartiklar. Checksumman gör det möjligt att verifiera att filen
+  som analyserats är exakt den som publicerades.
 </p>
-<table class="enkel">
+
+<div class="kalltabell-hylsa">
+<table class="enkel kalltabell">
   <thead>
-    <tr><th>Parti</th><th class="num">Förslag</th>
-        <th class="num">Svag träff</th><th class="num">Andel</th>
-        <th style="width:30%"></th></tr>
+    <tr>
+      <th>Utgivare</th><th>Dokument</th>
+      <th class="num">Sidor</th><th class="num">Ord</th>
+      <th>Länkar</th>
+    </tr>
   </thead>
   <tbody>
-  {% for b in brist %}
+  {% for d in kallor.dokument %}
     <tr>
-      <td><span class="partitagg" style="background:{{ partifarger[b.parti] }}">{{ b.parti }}</span>
-          {{ parti_namn[b.parti] }}</td>
-      <td class="num">{{ b.totalt }}</td>
-      <td class="num">{{ b.svaga }}</td>
-      <td class="num">{{ b.pct }}%</td>
-      <td><div class="stapel" style="width:{{ b.pct }}%; background:#b8860b"></div></td>
+      <td><strong>{{ d.utgivare }}</strong></td>
+      <td>
+        {{ d.titel }}
+        {% if d.anmarkning %}
+        <details class="kallanot">
+          <summary>hämtningsanmärkning</summary>
+          <p>{{ d.anmarkning }}</p>
+        </details>
+        {% endif %}
+        <code class="sha" title="SHA256 av den analyserade filen">{{ d.sha256[:16] }}…</code>
+      </td>
+      <td class="num">{{ d.sidor or '&mdash;'|safe }}</td>
+      <td class="num">{{ '{:,}'.format(d.ord).replace(',',' ') }}</td>
+      <td class="lankar">
+        <a href="{{ d.url }}" rel="noopener nofollow">dokument</a>
+        <a href="{{ d.landningssida }}" rel="noopener nofollow">sida</a>
+      </td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
+</div>
 
-<h2>Fördelning av utsagetyper</h2>
-<p class="ingress">
-  Ett kvantifierat löfte och en vision är inte samma sorts påstående och bör
-  inte räknas ihop rakt av. Övervikten för &rdquo;princip&rdquo; speglar delvis
-  att heuristiken är försiktig &mdash; den kräver ett tydligt verb för att
-  klassa något som reform.
+<h3>Komplement</h3>
+{% for k in kallor.komplement %}
+<div class="kort">
+  <p style="margin:0 0 7px">
+    <strong>{{ k.utgivare }}:</strong> {{ k.titel }}
+    ({{ k.sidor }} sidor, {{ '{:,}'.format(k.ord).replace(',',' ') }} ord)
+    &middot; <a href="{{ k.url }}" rel="noopener nofollow">dokument</a>
+  </p>
+  <p style="margin:0; font-size:13px; color:var(--svag)">{{ k.motiv }}</p>
+</div>
+{% endfor %}
+
+<div class="panelblock panelblock-varning">
+  <h3>Vad som inte ingår</h3>
+  <p>
+    Endast riksdokumenten. Partiernas lokala och regionala manifest är
+    utelämnade. Partiprogram (den långsiktiga idégrunden) ingår inte heller
+    &mdash; bara valmanifesten för mandatperioden, med undantaget ovan.
+  </p>
+</div>
+
+<!-- ============================================ PROCESSEN -->
+<h2 id="process">Processen: från textmassa till datamängd</h2>
+
+<p class="ingress" style="max-width:70ch">
+  Flödet är medvetet omvänt mot hur man oftast gör. I stället för att lämna
+  texten till en språkmodell och be om en analys byggs först en struktur, och
+  analysen görs sedan <em>på strukturen</em>.
 </p>
-<table class="enkel">
-  <thead><tr><th>Typ</th><th class="num">Antal</th><th class="num">Andel</th></tr></thead>
-  <tbody>
-  {% for typ, n in typer %}
-    <tr>
-      <td>{{ typ }}</td>
-      <td class="num">{{ n }}</td>
-      <td class="num">{{ (n/totalt*100)|round|int }}%</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
 
-<h2>Nästa steg för att höja kvaliteten</h2>
-<ul class="ingress" style="max-width:70ch">
-  <li>Manuell granskning av raderna med svag träff &mdash; sätt <code>granskad: true</code>.</li>
-  <li>Dubbeltaggning av ett parti av två oberoende personer, som stickprov på bias.</li>
-  <li>Sidhänvisning per förslag, så varje påstående kan spåras till källan.</li>
-  <li>Komplettera med riksdagens voteringsdata &mdash; vad partierna gjort, inte lovat.</li>
+<div class="flode">
+  {% for steg in processteg %}
+  <div class="flodesteg">
+    <div class="flodenr">{{ loop.index }}</div>
+    <div class="flodeinnehall">
+      <div class="flodehuvud">
+        <h3>{{ steg.titel }}</h3>
+        <span class="flodeaktor flodeaktor-{{ steg.aktor_klass }}">{{ steg.aktor }}</span>
+      </div>
+      <p>{{ steg.text }}</p>
+      {% if steg.utfall %}<p class="flodeutfall">{{ steg.utfall }}</p>{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ============================================ VARFÖR INTE CHATGPT -->
+<h2 id="varfor-inte-chatgpt">Varför inte bara lägga in allt i en chatt?</h2>
+
+<p class="ingress" style="max-width:70ch">
+  {{ korpus.ord_totalt|replace(',', ' ') }} ord får plats i ett modernt
+  kontextfönster. Man <em>kan</em> klistra in alltihop och be om en jämförelse.
+  Problemet är inte kapaciteten &mdash; det är vad man får tillbaka.
+</p>
+
+<div class="jamforelse">
+  {% for j in jamforelse %}
+  <div class="jamfrad">
+    <div class="jamfkol jamfkol-a">
+      <span class="jamfetikett">Direkt i chatten</span>
+      <p>{{ j.chatt }}</p>
+    </div>
+    <div class="jamfkol jamfkol-b">
+      <span class="jamfetikett">Med strukturerad datamängd</span>
+      <p>{{ j.struktur }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="panelblock panelblock-varning">
+  <h3>Kärnan i problemet</h3>
+  <p>
+    Ber man en modell jämföra åtta dokument fattar den <strong>hundratals
+    små tolkningsbeslut som ingen ser</strong>: vad som räknas som ett förslag,
+    vilken kategori det hör till, vad som är jämförbart med vad. Besluten är
+    inte nedskrivna någonstans, de går inte att granska, och de kan ändras
+    mellan två körningar av samma fråga.
+  </p>
+  <p>
+    En taxonomi flyttar de besluten <em>utanför</em> modellen. Kategorierna
+    är definierade i en fil man kan läsa, invända mot och versionshantera.
+    Samma indata ger samma utdata. När något ser fel ut går det att spåra
+    exakt vilken regel som orsakade det.
+  </p>
+  <p style="margin-bottom:0">
+    Poängen är inte att modellen är dålig på att läsa. Den är att en analys
+    man inte kan granska inte är ett underlag för beslut &mdash; det är en
+    åsikt med auktoritativ formatering.
+  </p>
+</div>
+
+<!-- ============================================ ARBETSDELNING -->
+<h2 id="arbetsdelning">Vad som är LLM, vad som är kod, vad som är innehåll</h2>
+
+<p class="ingress" style="max-width:70ch">
+  Tre olika saker blandas ofta ihop när något beskrivs som &rdquo;byggt med
+  AI&rdquo;. Här är de separerade.
+</p>
+
+<div class="lagerstack">
+  {% for lager in lager %}
+  <div class="lager lager-{{ lager.klass }}">
+    <div class="lagerhuvud">
+      <h3>{{ lager.titel }}</h3>
+      <span class="lagermarke">{{ lager.marke }}</span>
+    </div>
+    <p class="lagerbeskrivning">{{ lager.beskrivning }}</p>
+    <ul>
+      {% for p in lager.punkter %}<li>{{ p }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="panelblock">
+  <h3>Ingen språkmodell i databearbetningen</h3>
+  <p>
+    Taggningen av {{ korpus.forslag }} textstycken mot taxonomin görs med
+    nyckelordsmatchning, inte med en språkmodell. Det ger sämre träffsäkerhet
+    men tre saker som väger tyngre: <strong>determinism</strong> (samma indata
+    ger samma utdata), <strong>granskbarhet</strong> (man kan se exakt vilket
+    ord som orsakade en tagg) och <strong>ärlighet om osäkerhet</strong> (en
+    svag träff signalerar att den gissar &mdash; en språkmodell låter lika
+    säker när den har fel).
+  </p>
+  <p style="margin-bottom:0">
+    Det visade sig avgörande. Se <a href="#brister">Brister</a>.
+  </p>
+</div>
+
+<!-- ============================================ DATAMÄNGDEN -->
+<h2 id="data">Datamängden</h2>
+
+<div class="datarutnat">
+  {% for d in datafiler %}
+  <div class="kort">
+    <h3 style="margin:0 0 5px; font-size:13px"><code>{{ d.fil }}</code></h3>
+    <p style="margin:0 0 6px; font-size:12.5px; color:var(--svag)">{{ d.beskrivning }}</p>
+    <p style="margin:0; font-size:12px"><strong>{{ d.antal }}</strong> {{ d.enhet }}</p>
+  </div>
+  {% endfor %}
+</div>
+
+<h3>Spårbarhetskedjan</h3>
+<p class="ingress">
+  Varje påstående i valkompassen går att följa hela vägen tillbaka till en
+  namngiven fil med checksumma. Kedjan är verifierad: noll brutna länkar.
+</p>
+<div class="kedja">
+  {% for k in kedja %}
+  <div class="kedjelank">
+    <span class="kedjenr">{{ loop.index }}</span>
+    <div>
+      <strong>{{ k.steg }}</strong>
+      <span class="kedjefalt">{{ k.falt }}</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ============================================ BRISTER -->
+<h2 id="brister">Brister och felkällor</h2>
+
+<div class="varning">
+  <strong>Taggningen är heuristisk.</strong> Den läser vokabulär, inte
+  innebörd. {{ korpus.svaga_pct }} % av de taggade textstyckena vilar på en
+  enda nyckelordsträff. Siffrorna duger för att hitta mönster &mdash; inte
+  som belägg för vad en utgivare tycker.
+</div>
+
+<h3>Ett fel som illustrerar varför granskning behövs</h3>
+<div class="kort">
+  <p>
+    I en tidig version var en hel rad i täckningsmatrisen mörk för alla åtta
+    källor. Orsaken: nyckelordet <code>isk</code> (investeringssparkonto)
+    matchade som <strong>delsträng</strong> inuti vanliga svenska ord &mdash;
+    sv<em>isk</em>, f<em>isk</em>et, fr<em>isk</em>t, männ<em>isk</em>ors,
+    europe<em>isk</em>.
+  </p>
+  <p>
+    214 av 221 träffar i den subdomänen var rent brus. En hel domän var
+    uppblåst till en fjärdedel av materialet.
+  </p>
+  <p style="margin-bottom:0">
+    <strong>Maskinen kunde inte upptäcka det.</strong> Den producerade
+    välformad JSON, rimliga fördelningar och inga fel. Pipelinen körde grönt.
+    Felet syntes bara som ett mönster som var <em>för</em> regelbundet för att
+    vara äkta &mdash; och det krävde en människa som tittade på en färg och
+    tyckte att den såg konstig ut.
+  </p>
+</div>
+
+<h3>Kända begränsningar</h3>
+<ul class="ingress" style="max-width:72ch">
+  {% for b in begransningar %}<li>{{ b }}</li>{% endfor %}
 </ul>
 
-<p class="ingress">Taxonomiversion {{ version }} &middot; {{ totalt }} förslag.</p>
+<h3>Vad projektet inte gör</h3>
+<div class="panelblock panelblock-varning">
+  <p>
+    Det här verktyget utvärderar ingen politik, rangordnar inte partier och
+    rekommenderar inget. Det gör åtta dokument läsbara sida vid sida enligt en
+    struktur som är öppen att granska och invända mot.
+  </p>
+  <p style="margin-bottom:0">
+    Läsningen, och besluten, är fortfarande läsarens.
+  </p>
+</div>
+
+<p class="ingress" style="margin-top:26px">
+  Taxonomiversion {{ version }} &middot; {{ korpus.forslag }} taggade
+  textstycken &middot; {{ korpus.pastaenden }} granskade påståenden
+</p>
 
 {% endblock %}

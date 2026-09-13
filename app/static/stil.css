@@ -292,3 +292,90 @@ table.enkel td.num{text-align:right; font-variant-numeric:tabular-nums}
 .traffkalla summary{cursor:pointer; font-size:11.5px; color:var(--svag)}
 .traffkalla summary:hover{color:var(--accent)}
 .traffkalla .originalruta{margin-top:6px; font-size:12.5px}
+
+/* ---------- om-sidan (CR-005) ---------- */
+.omnav{display:flex; gap:7px; flex-wrap:wrap; margin:0 0 26px;
+  padding-bottom:14px; border-bottom:1px solid var(--linje)}
+.omnav a{padding:5px 11px; border:1px solid var(--linje-stark);
+  border-radius:2px; text-decoration:none; color:var(--svag);
+  font-size:12.5px; background:var(--yta)}
+.omnav a:hover{border-color:var(--accent); color:var(--accent)}
+
+.kalltabell-hylsa{overflow-x:auto; margin-bottom:10px}
+.kalltabell{min-width:680px}
+.kalltabell td{vertical-align:top}
+.sha{display:block; margin-top:4px; font-size:10.5px; color:var(--svag);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.kallanot{margin:5px 0}
+.kallanot summary{cursor:pointer; font-size:11.5px; color:var(--svag)}
+.kallanot summary:hover{color:var(--accent)}
+.kallanot p{margin:5px 0 0; font-size:12px; color:var(--svag);
+  line-height:1.5; max-width:60ch}
+.lankar{white-space:nowrap}
+.lankar a{font-size:12px; margin-right:9px; color:var(--accent)}
+
+.flode{margin-bottom:22px}
+.flodesteg{display:flex; gap:14px; padding-bottom:16px; position:relative}
+.flodesteg:not(:last-child)::before{content:""; position:absolute;
+  left:13px; top:30px; bottom:0; width:1px; background:var(--linje)}
+.flodenr{flex-shrink:0; width:27px; height:27px; border-radius:50%;
+  background:var(--yta); border:1px solid var(--linje-stark);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; color:var(--svag); z-index:1}
+.flodeinnehall{flex:1; min-width:0}
+.flodehuvud{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap;
+  margin-bottom:4px}
+.flodehuvud h3{margin:0; font-size:14px; font-weight:600}
+.flodeaktor{font-size:10.5px; padding:1px 8px; border-radius:2px;
+  font-weight:700; letter-spacing:.03em}
+.flodeaktor-kod{background:#e4ecf2; color:#2b4a63}
+.flodeaktor-manniska{background:#f2e8d8; color:#7a5320}
+.flodeinnehall p{margin:0; font-size:13px; line-height:1.6;
+  color:var(--svag); max-width:66ch}
+.flodeutfall{margin-top:5px !important; font-size:12px !important;
+  color:var(--text) !important; font-weight:600}
+
+.jamforelse{margin-bottom:18px}
+.jamfrad{display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  margin-bottom:9px}
+.jamfkol{padding:11px 14px; border-radius:var(--radie); font-size:13px;
+  line-height:1.55; border:1px solid var(--linje); background:var(--yta)}
+.jamfkol-a{border-left:3px solid #b8860b}
+.jamfkol-b{border-left:3px solid var(--accent)}
+.jamfetikett{display:block; font-size:10.5px; font-weight:700;
+  color:var(--svag); margin-bottom:5px; letter-spacing:.03em}
+.jamfkol p{margin:0}
+
+.lagerstack{display:grid; gap:11px; margin-bottom:20px}
+.lager{padding:14px 16px; border:1px solid var(--linje);
+  border-radius:var(--radie); background:var(--yta); border-left-width:3px}
+.lager-innehall{border-left-color:#6b7f5e}
+.lager-kod{border-left-color:#4a7c8c}
+.lager-llm{border-left-color:#8c6d3f}
+.lager-manniska{border-left-color:#a8603f}
+.lagerhuvud{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap;
+  margin-bottom:6px}
+.lagerhuvud h3{margin:0; font-size:14.5px; font-weight:600}
+.lagermarke{font-size:10.5px; color:var(--svag); font-weight:600}
+.lagerbeskrivning{margin:0 0 8px; font-size:13px; color:var(--svag);
+  line-height:1.55; max-width:66ch}
+.lager ul{margin:0; padding-left:19px; font-size:12.5px; line-height:1.7}
+
+.datarutnat{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:9px; margin-bottom:20px}
+.datarutnat code{font-size:12px}
+
+.kedja{margin-bottom:20px}
+.kedjelank{display:flex; gap:11px; align-items:center; padding:8px 0;
+  border-bottom:1px solid var(--linje); font-size:13px}
+.kedjelank:last-child{border-bottom:none}
+.kedjenr{flex-shrink:0; width:21px; height:21px; border-radius:50%;
+  background:var(--accent); color:#fff; display:flex; align-items:center;
+  justify-content:center; font-size:11px; font-weight:700}
+.kedjefalt{display:block; font-size:11.5px; color:var(--svag);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace; margin-top:2px}
+
+@media (max-width:700px){
+  .jamfrad{grid-template-columns:1fr; gap:5px}
+  .jamfkol-a{border-left-color:#b8860b}
+}
