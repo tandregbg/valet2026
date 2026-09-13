@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titel %}Valkompass{% endblock %}
+{% block innehall %}
+<h1>Valkompassen är inte redo än</h1>
+<div class="varning">
+  {% for v in varningar %}<p>{{ v }}</p>{% endfor %}
+</div>
+<p class="ingress">
+  <a href="{{ url_for('granskning.index') }}">Gå till granskningen</a> för att
+  godkänna påståenden.
+</p>
+{% endblock %}
