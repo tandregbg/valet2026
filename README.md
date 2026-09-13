@@ -13,6 +13,13 @@ koden, och en changelog som innehåller felen lika utförligt som framstegen.
 Valmanifesten är testmaterialet, inte poängen. Samma metod fungerar på
 kundintervjuer, remissvar, offerter eller mötesprotokoll.
 
+![Täckningsmatrisen](docs/bilder/tackningsmatris.png)
+
+*Varje ruta går att klicka på och spåra tillbaka till en textrad i ett
+källdokument. Panelen till höger talar om vad måttet inte säger — 40 % av
+raderna vilar på en enda ordträff, och en streckad ruta betyder att
+sorteringen inte hittade något, inte att dokumentet är tyst.*
+
 ## Börja här
 
 | Om du vill… | Gå till |

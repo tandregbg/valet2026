@@ -39,6 +39,15 @@ och som ingen maskin kunde ha upptäckt.
 
 Allt det står nedan, inklusive återvändsgränderna.
 
+![Resultatet: en matris där varje rad är ett sakområde och varje kolumn ett
+dokument. Färgmättnaden visar hur stor andel av dokumentet som ligger i
+området, streckade rutor att sorteringen inte hittade något.](docs/bilder/tackningsmatris.png)
+
+*Slutprodukten. Det intressanta är inte siffrorna i rutorna — det är att varje
+ruta går att klicka på och spåra tillbaka till en textrad i ett källdokument,
+och att panelen till höger talar om vad måttet **inte** säger. En
+chattsammanfattning har ingen sådan panel, för den vet inte vad den inte vet.*
+
 > **Om artikelns karaktär.** Det här är en teknisk genomgång av en
 > databearbetningsprocess. Korpusen består av valmanifest, men artikeln handlar
 > om metoden, inte om politiken.
@@ -170,14 +179,18 @@ publicerade en fil. Det är den sortens heterogenitet som gör jämförelsen sv�
 — och den är inte unik för valmanifest. Åtta leverantörsofferter ser likadana
 ut.
 
-**Ett redaktionellt beslut värt att notera som mönster.** Miljöpartiets
-valmanifest är bara 9 sidor, medan Moderaternas är 50. I en jämförelse hade
-MP blivit kraftigt underrepresenterade, så jag hämtade även deras politiska
-handlingsprogram 2026–2030 (106 sidor) som komplement.
+**Ett redaktionellt beslut värt att notera som mönster.** Det kortaste
+dokumentet var 9 sidor, det längsta 50. I en jämförelse hade den korta
+källan blivit kraftigt underrepresenterad, så jag hämtade även utgivarens
+längre programdokument (106 sidor) som komplement.
 
 Det är ett *tolkningsbeslut*, inte ett tekniskt. Det påverkar alla siffror
-nedströms: MP hamnade näst högst i antal extraherade enheter, till stor del
-för att de fick bidra med ett dokument de andra inte fick.
+nedströms: den källan hamnade näst högst i antal extraherade enheter, till
+stor del för att den fick bidra med ett dokument de andra inte fick.
+
+Vem det var står i repots källförteckning. Poängen här är att beslutet
+**måste dokumenteras** — annars blir jämförelsen tyst missvisande på ett sätt
+ingen kan upptäcka i efterhand.
 
 Sådana beslut är oundvikliga när korpusen är heterogen. Poängen är inte att
 undvika dem utan att dokumentera dem, annars blir jämförelsen tyst
@@ -194,20 +207,24 @@ missvisande på ett sätt ingen kan upptäcka i efterhand.
 Det första jag gjorde var att titta på hur dokumenten själva är strukturerade.
 Det avgjorde hela designen:
 
-| Parti | Egen toppnivå | Konsekvens för jämförelsen |
-|-------|---------------|----------------------------|
-| S | 3 kapitel | Klimat saknar helt egen rubrik |
-| M | Löpande prosa | Ingen numrering alls |
-| SD | ~35 platta rubriker | Ingen gruppering, ingen hierarki |
-| C | 7 teman | Hanterbar |
-| V | 3 prioriteringar | Allt utanför dessa tre är nedtryckt |
-| KD | 4 "hörnstenar" | Kategorier som inte är sakområden |
-| MP | 15 kapitel | Djurvälfärd på toppnivå |
-| L | 8 kapitel | Hanterbar |
+| Dokument | Toppnivå | Problem för en gemensam indelning |
+|----------|----------|-----------------------------------|
+| 1 | 3 kapitel | Flera stora sakområden saknar egen rubrik |
+| 2 | Löpande prosa | Ingen numrering alls att hänga upp sig på |
+| 3 | ~35 platta rubriker | Ingen gruppering, ingen hierarki |
+| 4 | 7 teman | Hanterbar |
+| 5 | 3 prioriteringar | Allt utanför de tre ligger nedtryckt |
+| 6 | 4 tematiska "hörnstenar" | Kategorier som inte är sakområden |
+| 7 | 15 kapitel | Ett smalt specialområde på samma nivå som breda |
+| 8 | 8 kapitel | Hanterbar |
 
-Att notera: det här säger **ingenting om innehållets kvalitet**. Varje parti
-har strukturerat sitt dokument efter den berättelse de vill förmedla, vilket
-är rationellt av dem. Problemet uppstår först när man försöker jämföra.
+Tabellen är anonymiserad med avsikt. Vilket dokument som är vilket spelar
+ingen roll för poängen — och att koppla ihop en struktur med en avsändare
+inbjuder till slutsatser om innehållet som strukturen inte bär.
+
+**Varje utgivare har strukturerat sitt dokument efter den berättelse de vill
+förmedla.** Det är rationellt av dem. Problemet uppstår först när någon
+utifrån försöker jämföra åtta sådana dokument med varandra.
 
 **Den generella principen:** källans egen struktur är optimerad för källans
 syfte. Sorterar man efter den mäter man deras framställning, inte deras
@@ -279,11 +296,11 @@ vägen ut i gränssnittet.
 Ett "förslag" ser olika ut rent typografiskt i varje dokument, och en dator
 måste få veta exakt vad den ska leta efter:
 
-- **KD** använder punktlistor med ett ovanligt specialtecken som bullet
-- **L** har numrerade förslag: `12. Rubrik. Brödtext...`
-- **V** har fetstilta underrubriker följt av stycken
-- **MP och C** har löpande kapiteltext utan listor
-- **S, M, SD** är styckebaserade utan tydliga markörer alls
+- Ett dokument använder punktlistor med ett ovanligt specialtecken som bullet
+- Ett har numrerade förslag: `12. Rubrik. Brödtext...`
+- Ett har fetstilta underrubriker följt av stycken
+- Två har löpande kapiteltext utan listor
+- Tre är styckebaserade utan tydliga markörer alls
 
 Det gick inte att skriva en rutin som klarade alla åtta. Jag skrev en per
 dokument, med gemensam städning av texten:
@@ -328,8 +345,8 @@ Utelämnande framför gissning. Bortfallet blev 2-21% per parti och redovisas
 
 ### Första iterationen och en första rättning
 
-Första körningen gav 32 % bortfall för KD. Diagnosen visade välformulerade
-förslag som föll bort på ordglapp:
+Första körningen gav 32 % bortfall för ett av dokumenten. Diagnosen visade
+välformulerade förslag som föll bort på ordglapp:
 
 > "Maxtaxa för kommunala avgifter för bygglov."
 
@@ -383,17 +400,21 @@ färg och siffra samma sak.
 Konfliktaxlarna var tänkta som positionsskalor: källorna utplacerade på en
 linje mellan två motpoler, till exempel "mer offentligt" och "mer marknad".
 
-Första körningen placerade V och MP på marknadssidan. Uppenbart fel — deras
-dokument argumenterar uttryckligen mot marknadslösningar i välfärden.
+Första körningen placerade flera dokument på fel sida av linjen. Det var
+uppenbart fel för vem som helst som läst dem.
 
 Orsaken är generell och värd att förstå: **nyckelord räknar omnämnanden, inte
-ståndpunkt.** Den som argumenterar emot något skriver ordet oftare än den som
-är likgiltig inför det. V skriver "vinstjakt" och "marknadsstyrning" i nästan
-varje stycke om välfärd — just för att det är det de vänder sig mot.
+ståndpunkt.**
+
+Ett dokument som ägnar tjugo sidor åt att argumentera mot ett fenomen nämner
+fenomenet i varje stycke. Ett dokument som är likgiltigt inför samma fenomen
+nämner det inte alls. Räknar man förekomster hamnar motståndaren högst — som
+om de vore fenomenets främsta förespråkare.
 
 Frekvens är alltså en usel proxy för hållning. Det gäller varje textkorpus där
-man försöker mäta attityd med ordlistor — kundfeedback, remissvar,
-medarbetarundersökningar.
+man försöker mäta attityd med ordlistor: kundfeedback, remissvar,
+medarbetarundersökningar, produktrecensioner. Den som klagar högljutt om en
+funktion nämner den oftare än den som är nöjd.
 
 Jag försökte med negationsdetektion:
 
@@ -595,6 +616,15 @@ sak som hur viktig den är. En källa kan säga något avgörande på två menin
 
 40% av raderna vilar fortfarande på en enda nyckelordsträff. `granskad` är
 `false` på alla 1 528.
+
+---
+
+![Om-sidan i verktyget: källtabell med utgivare, sidantal, ordantal,
+checksumma och länk till både dokumentet och landningssidan.](docs/bilder/om-kallor-och-process.png)
+
+*Varje analys bör kunna svara på frågan "var kommer det här ifrån?". Checksumman
+gör det möjligt att verifiera att filen som analyserats är exakt den som
+publicerades — inte en senare version, inte en kopia någon redigerat.*
 
 ---
 
