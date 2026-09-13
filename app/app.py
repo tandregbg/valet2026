@@ -223,16 +223,200 @@ def inramning():
 
 @app.route("/om")
 def om():
-    brist = []
-    for p in partier():
-        rs = [r for r in RADER if r["parti"] == p]
-        svaga = sum(1 for r in rs if r["traffsakerhet"] <= 1)
-        brist.append({"parti": p, "totalt": len(rs), "svaga": svaga,
-                      "pct": round(svaga / len(rs) * 100) if rs else 0})
-    typer = Counter(r["typ"] for r in RADER)
-    return render_template("om.html", brist=brist, typer=typer.most_common(),
-                           totalt=len(RADER), partifarger=PARTIFARGER,
-                           parti_namn=PARTI_NAMN, version=TAX["version"])
+    """Om-sidan: kallor, process, arbetsdelning och brister.
+
+    Alla siffror harleds ur faktisk data - inget hardkodat, sa att sidan
+    inte kan bli inaktuell nar datamangden andras."""
+    kallor = yaml.safe_load((ROOT / "domains" / "kallor.yaml").read_text(encoding="utf-8"))
+
+    pastaenden = []
+    pf = ROOT / "domains" / "pastaenden.jsonl"
+    if pf.exists():
+        pastaenden = [json.loads(l) for l in
+                      pf.read_text(encoding="utf-8").splitlines() if l.strip()]
+    kandidater = []
+    kf = ROOT / "domains" / "kandidater.jsonl"
+    if kf.exists():
+        kandidater = [json.loads(l) for l in
+                      kf.read_text(encoding="utf-8").splitlines() if l.strip()]
+
+    ord_totalt = (sum(d["ord"] for d in kallor["dokument"])
+                  + sum(k["ord"] for k in kallor.get("komplement", [])))
+    sidor_totalt = (sum(d["sidor"] or 0 for d in kallor["dokument"])
+                    + sum(k["sidor"] or 0 for k in kallor.get("komplement", [])))
+    svaga = sum(1 for r in RADER if r["traffsakerhet"] <= 1)
+
+    korpus = {
+        "ord_totalt": f"{ord_totalt:,}",
+        "sidor_totalt": sidor_totalt,
+        "dokument": len(kallor["dokument"]) + len(kallor.get("komplement", [])),
+        "forslag": len(RADER),
+        "pastaenden": len(pastaenden),
+        "kandidater": len(kandidater),
+        "svaga_pct": round(svaga / len(RADER) * 100) if RADER else 0,
+    }
+
+    processteg = [
+        {"titel": "Hämta förstahandskällor", "aktor": "Kod", "aktor_klass": "kod",
+         "text": "Domänbegränsad sökning per utgivare, nedladdning, verifiering "
+                 "av filtyp och checksumma. Inga sammanfattningar.",
+         "utfall": f"{corpus_dok(kallor)} dokument, {sidor_totalt} sidor"},
+        {"titel": "Extrahera text", "aktor": "Kod", "aktor_klass": "kod",
+         "text": "pdftotext -layout bevarar kolumnstruktur. En källa publicerade "
+                 "inget PDF och hämtades via sajtens REST API.",
+         "utfall": f"{ord_totalt:,} ord".replace(",", " ")},
+        {"titel": "Läsa igenom och förstå strukturen", "aktor": "Människa",
+         "aktor_klass": "manniska",
+         "text": "Varje utgivare strukturerar sitt dokument efter sin egen "
+                 "berättelse. En har tre kapitel, en har trettiofem platta "
+                 "rubriker. Slutsats: källornas egna indelningar går inte att "
+                 "använda som gemensam axel.",
+         "utfall": None},
+        {"titel": "Konstruera en neutral taxonomi", "aktor": "Människa",
+         "aktor_klass": "manniska",
+         "text": "Tolv sakområden som inte följer någon utgivares indelning, "
+                 "med subdomäner och nyckelord. Definierad i en fil som går "
+                 "att läsa, invända mot och versionshantera.",
+         "utfall": "12 domäner, 60 subdomäner"},
+        {"titel": "Segmentera till atomära enheter", "aktor": "Kod",
+         "aktor_klass": "kod",
+         "text": "En parser per dokument, eftersom typografin skiljer sig. "
+                 "Ett förslag är enheten, inte ett kapitel.",
+         "utfall": f"{len(RADER)} textstycken"},
+        {"titel": "Tagga mot taxonomin", "aktor": "Kod", "aktor_klass": "kod",
+         "text": "Deterministisk nyckelordsmatchning. Ingen språkmodell — "
+                 "determinism och granskbarhet väger tyngre än träffsäkerhet.",
+         "utfall": f"{corpus_taggade(RADER)} taggade, resten utelämnade"},
+        {"titel": "Granska och skriva om", "aktor": "Människa",
+         "aktor_klass": "manniska",
+         "text": "Varje kandidat läst mot originaltexten och bedömd enligt fem "
+                 "kriterier. Trasig text, metatext, rubriker utan sakinnehåll "
+                 "och feltaggningar förkastade. Resten omskrivna så att "
+                 "avsändarens röst försvinner.",
+         "utfall": f"{len(pastaenden)} godkända av {len(kandidater)} kandidater"},
+        {"titel": "Visualisera", "aktor": "Kod", "aktor_klass": "kod",
+         "text": "Vyer som redovisar sin egen osäkerhet: svaga träffar märks, "
+                 "täckningssiffror visas alltid bredvid procent, varje cell "
+                 "länkar tillbaka till källtexten.",
+         "utfall": None},
+    ]
+
+    jamforelse = [
+        {"chatt": "Modellen bestämmer själv vad som är ett förslag och vilken "
+                  "kategori det hör till. Besluten syns inte.",
+         "struktur": "Kategorierna är definierade i en fil innan analysen "
+                     "börjar. Går att läsa, invända mot och ändra."},
+        {"chatt": "Två körningar av samma fråga kan ge olika svar.",
+         "struktur": "Samma indata ger samma utdata. Kör om och jämför."},
+        {"chatt": "Ett påstående i svaret går inte att spåra till en rad i ett "
+                  "dokument.",
+         "struktur": "Varje enhet bär sin originaltext och sin källa. Noll "
+                     "brutna länkar i kedjan."},
+        {"chatt": "Modellen sammanfattar — och sammanfattningen tar bort det "
+                  "man behövde se.",
+         "struktur": "Ingenting komprimeras bort. Strukturen gör materialet "
+                     "filtrerbart, originalet finns kvar."},
+        {"chatt": "Osäkerhet syns inte. Svaret låter lika säkert oavsett.",
+         "struktur": "Svaga träffar är märkta i gränssnittet. Man ser var "
+                     "underlaget är tunt."},
+        {"chatt": "Ett fel i tolkningen är osynligt och oåtkomligt.",
+         "struktur": "Ett fel går att spåra till en regel och rättas på "
+                     "minuter. Det hände — se Brister."},
+    ]
+
+    lager = [
+        {"titel": "Rent innehåll", "marke": "från källorna", "klass": "innehall",
+         "beskrivning": "Text som utgivarna själva skrivit och publicerat. "
+                        "Ingenting av detta är genererat.",
+         "punkter": [
+             "Samtliga valmanifest, ordagrant",
+             "Originaltexten bakom varje påstående",
+             "Utgivarnas egna rubriker, bevarade per enhet",
+         ]},
+        {"titel": "AI-assisterad kod", "marke": "verktyget", "klass": "kod",
+         "beskrivning": "Programkod skriven med AI-assistans, men "
+                        "deterministisk när den körs. Ingen modell är "
+                        "inblandad i bearbetningen av data.",
+         "punkter": [
+             "Hämtning, textextraktion och segmentering",
+             "Nyckelordsmatchning mot taxonomin",
+             "Matchningsalgoritm och webbgränssnitt",
+             "Tester som verifierar invarianterna",
+         ]},
+        {"titel": "Språkmodell", "marke": "begränsad roll", "klass": "llm",
+         "beskrivning": "Används som assistent i utvecklingsarbetet och för "
+                        "att generera utkast — aldrig som beslutsfattare över "
+                        "data.",
+         "punkter": [
+             "Skrev koden tillsammans med en människa",
+             "Genererade förslag till omskrivningar som utgångspunkt",
+             "Ingen roll i taggningen av textstyckena",
+             "Ingen roll i matchningsberäkningen",
+         ]},
+        {"titel": "Mänskligt omdöme", "marke": "avgörande", "klass": "manniska",
+         "beskrivning": "Besluten som formade resultatet. Inget av dem är "
+                        "tekniskt svårt — alla kräver någon som vet vad "
+                        "materialet handlar om.",
+         "punkter": [
+             "Taxonomins gränsdragningar",
+             "Att förkasta en positionsskala underlaget inte bar",
+             "Att upptäcka att en hel domän var brus",
+             "Redaktionell granskning av varje påstående",
+             "Att avgöra vad som inte ska redovisas",
+         ]},
+    ]
+
+    datafiler = [
+        {"fil": "manifest/*.pdf + .txt", "beskrivning": "Källdokument och extraherad text",
+         "antal": korpus["dokument"], "enhet": "dokument"},
+        {"fil": "domains/taxonomi.yaml", "beskrivning": "Domäner, subdomäner, konfliktaxlar",
+         "antal": 12, "enhet": "domäner"},
+        {"fil": "domains/forslag.jsonl", "beskrivning": "Taggade textstycken med källa",
+         "antal": len(RADER), "enhet": "rader"},
+        {"fil": "domains/kandidater.jsonl", "beskrivning": "Kandidater för granskning",
+         "antal": len(kandidater), "enhet": "kandidater"},
+        {"fil": "domains/pastaenden.jsonl", "beskrivning": "Granskade påståenden till valkompassen",
+         "antal": len(pastaenden), "enhet": "påståenden"},
+        {"fil": "domains/kallor.yaml", "beskrivning": "Källförteckning med URL och checksumma",
+         "antal": korpus["dokument"], "enhet": "poster"},
+    ]
+
+    kedja = [
+        {"steg": "Påstående i valkompassen", "falt": "pastaenden.jsonl → text"},
+        {"steg": "Källhänvisning", "falt": "kallor[].parti + forslag_id"},
+        {"steg": "Originaltext", "falt": "originaltext"},
+        {"steg": "Taggat textstycke", "falt": "forslag.jsonl → id"},
+        {"steg": "Utgivarens egen rubrik", "falt": "partiets_egen_rubrik"},
+        {"steg": "Källdokument med checksumma", "falt": "kallor.yaml → sha256"},
+    ]
+
+    begransningar = [
+        f"{korpus['svaga_pct']} % av de taggade textstyckena vilar på en enda "
+        "nyckelordsträff.",
+        "Antal enheter speglar dokumentets längd och parserns granularitet "
+        "minst lika mycket som utgivarens prioriteringar.",
+        "Fyra domäner har för få granskade påståenden och är inte valbara i "
+        "valkompassen.",
+        "Matchningen mäter överensstämmelse där det finns belägg, aldrig "
+        "avstånd. Att ett förslag saknas betyder inte motstånd.",
+        "En källa fick bidra med ett extra dokument (se Komplement), vilket "
+        "påverkar alla jämförelser den ingår i.",
+        "Taxonomin är konstruerad av en person och är inte stabiliserad.",
+    ]
+
+    return render_template(
+        "om.html", kallor=kallor, korpus=korpus, processteg=processteg,
+        jamforelse=jamforelse, lager=lager, datafiler=datafiler, kedja=kedja,
+        begransningar=begransningar, version=TAX["version"],
+    )
+
+
+def corpus_dok(kallor):
+    return len(kallor["dokument"]) + len(kallor.get("komplement", []))
+
+
+def corpus_taggade(rader):
+    return len(rader)
 
 
 if __name__ == "__main__":

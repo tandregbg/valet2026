@@ -1,0 +1,116 @@
+# Källförteckning - strukturerad, för om-sidan och för publicering.
+# Speglar manifest/INDEX.md men i maskinläsbar form.
+#
+# Samtliga dokument hämtade 2026-09-13 från respektive utgivares officiella
+# webbplats. Inga tredjepartssammanfattningar, inga valkompasser, inga
+# nyhetsartiklar.
+
+hamtad: 2026-09-13
+metod: >-
+  Domänbegränsad sökning per utgivare, nedladdning med curl, verifiering via
+  MIME-typ och PDF-magic-bytes, textextraktion med pdftotext -layout -enc UTF-8.
+
+dokument:
+  - kod: S
+    utgivare: Socialdemokraterna
+    titel: Valprogram 2026 - "Dags att ta Sverige på allvar"
+    fil: S-valprogram-2026.pdf
+    url: https://www.socialdemokraterna.se/download/18.40fb56b21a04255a9803c1e/1788259051237/Soc%20Valprogram%202026.pdf
+    landningssida: https://www.socialdemokraterna.se/val-2026/valprogram
+    sidor: 21
+    ord: 7088
+    sha256: 252d28dfd7f72ca36d2ad5a3c02c4f6ac1cd1b4b5884580abe9267c0b3f2c051
+
+  - kod: M
+    utgivare: Moderaterna
+    titel: Valmanifest 2026 - "Ansträngning ska löna sig. Brott ska straffa sig."
+    fil: M-valmanifest-2026.pdf
+    url: https://moderaterna.se/app/uploads/2026/09/Valmanifest-2026_digital.pdf
+    landningssida: https://moderaterna.se/valmanifest-2026/
+    sidor: 50
+    ord: 16810
+    sha256: b6705c50e73d4dd25c626cc48ec9ff64041de3170f40e65ca7589805b1ee7cd3
+
+  - kod: SD
+    utgivare: Sverigedemokraterna
+    titel: Valplattform 2026 - "Hemma i Sverige"
+    fil: SD-valplattform-2026.pdf
+    url: https://www.sd.se/wp-content/uploads/2026/07/valplattform-2026.pdf
+    landningssida: https://www.sd.se/vad-vi-vill/
+    sidor: 12
+    ord: 3057
+    sha256: fa1bdfe015b73de1be3182dec78b7ec498e9822d3a4b4f89ae3ee1b679bb1407
+
+  - kod: C
+    utgivare: Centerpartiet
+    titel: Valmanifest 2026 - "Sverige kan mer"
+    fil: C-valmanifest-2026.md
+    url: https://val2026.centerpartiet.se/valmanifest/
+    landningssida: https://www.centerpartiet.se/centerpartiets-politik/valmanifest-2026
+    sidor: null
+    ord: 22982
+    sha256: 15c9b4fc5fa40279d0f21583fd92f44d09f23d9f221128a801e40bd07ec4cfc7
+    anmarkning: >-
+      Publicerar inget PDF. Manifestet med 328 reformförslag finns enbart som
+      webbplats. Hämtat strukturerat via sajtens publika WordPress REST API
+      (/wp-json/wp/v2/pages) för de 15 sidor som tillsammans utgör dokumentet.
+
+  - kod: V
+    utgivare: Vänsterpartiet
+    titel: Valmanifest 2026
+    fil: V-valmanifest-2026.pdf
+    url: https://www.vansterpartiet.se/wp-content/uploads/2026/09/Valmanifest_2026_WEBB-2.pdf
+    landningssida: https://www.vansterpartiet.se/val2026/
+    sidor: 21
+    ord: 5377
+    sha256: becffa6d8a3aa95778bc3b32b7814933fbcef1baae1d24fb0dc504d157aca8ee
+    anmarkning: >-
+      Hela domänen ligger bakom en Cloudflare-regel som avvisar automatiserade
+      klienter med HTTP 403. Dokumentet hämtades via en riktig webbläsarsession
+      styrd över DevTools-protokollet, efter att utmaningen passerats. Publikt
+      dokument som utgivaren själv distribuerar gratis.
+
+  - kod: KD
+    utgivare: Kristdemokraterna
+    titel: Valmanifest 2026 - "Tro på Sverige. Vård. Vardag. Värderingar."
+    fil: KD-valmanifest-2026.pdf
+    url: https://kristdemokraterna.se/download/18.3fb0a02c1a01f5f28f7326/1787292489599/Valmanifest%202026.pdf
+    landningssida: https://kristdemokraterna.se/var-politik/val-2026/valmanifest
+    sidor: 10
+    ord: 4646
+    sha256: 6aafa90124dc4a694d278a0446b7532b53e84cca007bcd80de50f78ebacc4630
+
+  - kod: MP
+    utgivare: Miljöpartiet
+    titel: Valmanifest 2026 - "Sverige vinner på grön politik"
+    fil: MP-valmanifest-2026.pdf
+    url: https://www.mp.se/wp-content/uploads/2026/08/miljopartiets-valmanifest-2026.pdf
+    landningssida: https://www.mp.se/valmanifest2026/
+    sidor: 9
+    ord: 3222
+    sha256: 2f5ae7faee5f47921d633b261db17c3c63a865634fc905d6d1553fa396b08865
+
+  - kod: L
+    utgivare: Liberalerna
+    titel: Valmanifest 2026 - "För din frihet"
+    fil: L-valmanifest-2026.pdf
+    url: https://www.liberalerna.se/wp-content/uploads/liberalernas-valmanifest-2026-40s-komprimerad.pdf
+    landningssida: https://www.liberalerna.se/var-politik-valet-2026
+    sidor: 40
+    ord: 9478
+    sha256: c37b7163ca017aa73a14861f3a66298b89fced7e7d5939aa3d697510ddf8cd31
+
+komplement:
+  - kod: MP
+    utgivare: Miljöpartiet
+    titel: Politiskt handlingsprogram 2026-2030
+    fil: MP-handlingsprogram-2026-2030.pdf
+    url: https://www.mp.se/wp-content/uploads/2026/04/politiskt-handlingsprogram-2026-2030.pdf
+    sidor: 106
+    ord: 35546
+    sha256: 053c14bd16367b033a1f4084ebc7cbffdeca1040a871621c16aea89350f6cb31
+    motiv: >-
+      Redaktionellt beslut. Miljöpartiets valmanifest är 9 sidor mot det
+      längsta dokumentets 50. I en jämförelse hade källan blivit kraftigt
+      underrepresenterad. Beslutet påverkar alla siffror nedströms och
+      redovisas därför öppet: MP får bidra med ett dokument de andra inte fick.

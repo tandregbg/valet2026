@@ -1,92 +1,147 @@
-# Valmanifest 2026 - domänanalys
+# Valmanifest 2026 — strukturerad datamängd och analysverktyg
 
-**Version 0.1.0**
+Åtta svenska valmanifest (108 206 ord) omvandlade till en strukturerad,
+granskningsbar datamängd — med en webbapp för att utforska den och en
+valkompass byggd på granskade påståenden.
 
-Insamling, strukturering och visualisering av samtliga åtta riksdagspartiers
-valmanifest inför riksdagsvalet 13 september 2026.
+**Projektet är ett metodexempel:** hur en stor textmassa kan bli ett underlag
+som människor kan fatta beslut på, utan att överlåta tolkningen till en
+språkmodell.
 
-Projektet börjar i källdata och lägger ett tolkningslager ovanpå. Lagret gör
-materialet navigerbart - det drar inga slutsatser. Det är en människas jobb.
+---
+
+## Poängen: flödet är omvänt
+
+Det vanliga sättet är att klistra in texten i en chatt och be om en analys.
+108 206 ord får plats i ett modernt kontextfönster, så det *går*.
+
+Problemet är inte kapaciteten — det är att modellen då fattar hundratals små
+tolkningsbeslut som ingen ser: vad som räknas som ett förslag, vilken kategori
+det hör till, vad som är jämförbart med vad. Besluten är inte nedskrivna, går
+inte att granska, och kan ändras mellan två körningar.
+
+Här görs det tvärtom:
+
+```
+1. Läs in källdata          ->  verifierad, med checksummor
+2. Läs och förstå strukturen ->  MÄNNISKA
+3. Konstruera en taxonomi    ->  MÄNNISKA, i en fil man kan invända mot
+4. Segmentera och tagga      ->  KOD, deterministiskt
+5. Granska och skriv om      ->  MÄNNISKA, varje rad
+6. Visualisera strukturen    ->  KOD
+```
+
+Analysen görs **på strukturen**, inte på texten. Kategorierna är definierade
+innan analysen börjar, i en fil som går att läsa, versionshantera och
+argumentera emot.
+
+---
+
+## Vad som är vad
+
+| Lager | Innehåll |
+|---|---|
+| **Rent innehåll** | Utgivarnas egen text, ordagrant. Inget genererat. |
+| **AI-assisterad kod** | Verktyget. Skrivet med AI-assistans, deterministiskt när det körs. |
+| **Språkmodell** | Utvecklingsassistent och utkastgenerator. **Ingen roll i databearbetningen.** |
+| **Mänskligt omdöme** | Taxonomin, granskningen, och besluten om vad som inte ska redovisas. |
+
+Taggningen av 1 528 textstycken görs med nyckelordsmatchning, inte med en
+språkmodell. Sämre träffsäkerhet — men determinism, granskbarhet och ärlighet
+om osäkerhet väger tyngre. Se `ARTIKEL.md` för varför det visade sig avgörande.
+
+---
 
 ## Struktur
 
 ```
 val2026/
-├── manifest/          Källdokument (PDF + extraherad text) + INDEX.md
+├── manifest/          Källdokument (PDF + text) + INDEX.md med checksummor
 ├── domains/
-│   ├── taxonomi.yaml  12 domäner, 60 subdomäner, 5 konfliktaxlar
-│   ├── extrahera.py   Segmentering + heuristisk taggning
-│   └── forslag.jsonl  1 528 förslag, en per rad
+│   ├── taxonomi.yaml      12 domäner, 60 subdomäner, 5 konfliktaxlar
+│   ├── kallor.yaml        Källförteckning med URL och SHA256
+│   ├── extrahera.py       Segmentering + taggning
+│   ├── forslag.jsonl      1 528 taggade textstycken
+│   ├── kandidater.py      Kandidatgenerering till valkompassen
+│   ├── kandidater.jsonl   291 kandidater
+│   └── pastaenden.jsonl   122 granskade påståenden
 ├── app/               Flask-app
-├── CHANGELOG.md
-└── README.md
+├── docs/change-requests/  CR-001..005
+├── tests/             30 tester
+├── ARTIKEL.md         Teknisk genomgång av processen
+└── CHANGELOG.md
 ```
-
-## Två lager
-
-Analysen håller isär två saker som annars blandas ihop:
-
-1. **Sakfrågan** - den neutrala taxonomin i `taxonomi.yaml`. Följer inget
-   partis egen kapitelindelning, och är därför jämförbar mellan partier.
-2. **Inramningen** - partiets egen rubrik, bevarad på varje förslag i
-   fältet `partiets_egen_rubrik`.
-
-Skillnaden mellan lagren är i sig ett analysresultat: den visar hur ett parti
-väljer att presentera politik som sakligt hör hemma någon annanstans.
 
 ## Köra
 
 ```bash
-pip install flask pyyaml
-python3 domains/extrahera.py     # bygger om forslag.jsonl
-python3 app/app.py               # http://127.0.0.1:5001
+python3 -m venv .venv && .venv/bin/pip install flask pyyaml pytest
+.venv/bin/python domains/extrahera.py     # bygg om forslag.jsonl
+.venv/bin/python -m pytest tests/ -q      # 30 tester
+.venv/bin/python app/app.py               # http://127.0.0.1:5001
 ```
 
 ## Vyer
 
-| Vy | Fråga den besvarar |
+| Vy | Fråga |
 |---|---|
-| `/` | Vilka domäner täcker partierna - och var är de tysta? |
-| `/doman/<id>` | Vad säger partierna faktiskt inom ett sakområde? |
+| `/` | Hur fördelar sig varje källas innehåll över domänerna? |
+| `/doman/<id>` | Vad står det faktiskt inom ett sakområde? |
 | `/axlar` | Vilka mönster skär tvärs över domängränserna? |
-| `/inramning` | Hur ramar partiet in sin egen politik? |
-| `/om` | Metod, felkällor och förbehåll |
+| `/inramning` | Hur förhåller sig källans egen rubrik till sakfrågan? |
+| `/kompass` | Valkompass: gradera 50 påståenden, se överensstämmelse |
+| `/granskning` | Redaktionell granskning av kandidater |
+| `/om` | Källor, process, arbetsdelning och brister |
 
-## Så läser du täckningsmatrisen
+---
 
-Kulören visar vilken domän raden gäller. Mättnaden visar hur stor andel av
-partiets eget manifest som ligger där - andel används i stället för antal
-eftersom manifesten är olika långa.
+## Spårbarhet
 
-Andelen mäter hur mycket **text** partiet ägnar frågan. Det är inte samma sak
-som hur viktig den är för dem.
+Varje påstående i valkompassen går att följa tillbaka till en namngiven fil
+med checksumma. Kedjan är verifierad — noll brutna länkar.
 
-En streckad ruta betyder att taggningen inte hittade några träffar - inte att
-partiet saknar politik på området. Med 40% av raderna på en enda
-nyckelordsträff är en tom cell lika ofta ett fel i taggningen som en tystnad i
-manifestet. Behandla varje cell som en hypotes att pröva mot källtexten.
+```
+Påstående → källhänvisning → originaltext → taggat stycke
+          → utgivarens egen rubrik → källdokument (SHA256)
+```
 
-## Viktigt om tillförlitligheten
+---
 
-Taggningen är **maskinell och oreviderad**. Den bygger på
-nyckelordsmatchning, inte på läsning, och har systematiska svagheter:
+## Brister — läs dessa
 
-- 40% av raderna har bara en nyckelordsträff.
-- Ord som förekommer hos både för- och motståndare kan ge fel domän.
-- Konfliktaxlarna kräver entydiga fraser för att skilja ståndpunkt från
-  omnämnande. Därför blir träffarna få, och axlarna redovisas som
-  belägglistor snarare än positionsskalor.
+- **40 % av de taggade textstyckena** vilar på en enda nyckelordsträff.
+- **Fyra av tolv domäner** har för få granskade påståenden och är inte
+  valbara i valkompassen. Kandidatunderlaget är uttömt — det är en verklig
+  gräns i materialet.
+- **En källa fick bidra med ett extra dokument** (Miljöpartiets
+  handlingsprogram), vilket påverkar alla jämförelser den ingår i. Beslutet
+  redovisas öppet i `domains/kallor.yaml`.
+- **Antal enheter speglar dokumentets längd** och parserns granularitet minst
+  lika mycket som utgivarens prioriteringar.
+- **Matchningen mäter överensstämmelse där det finns belägg, aldrig avstånd.**
+  Att ett förslag saknas betyder inte motstånd.
 
-Siffrorna duger för att hitta mönster och tystnader. De duger inte som
-belägg för vad ett parti tycker - kontrollera alltid mot källtexten i
-`manifest/`.
+Ett konkret exempel på varför granskning behövs: nyckelordet `isk`
+(investeringssparkonto) matchade som delsträng i *svensk*, *fisket* och
+*människors*. 214 av 221 träffar i en subdomän var brus. Maskinen upptäckte
+det inte — pipelinen körde grönt. En människa som tyckte att en färg såg
+konstig ut gjorde det.
 
-Ett konkret exempel på varför: i en tidig version matchade nyckelordet `isk`
-(investeringssparkonto) som delsträng i *svensk*, *fisket* och *människors*,
-vilket färgade en hel rad i matrisen. Felet upptäcktes för att någon
-ifrågasatte varför raden såg likadan ut för alla partier. Se CHANGELOG.
+## Vad projektet inte gör
+
+Verktyget utvärderar ingen politik, rangordnar inte partier och rekommenderar
+inget. Det gör åtta dokument läsbara sida vid sida enligt en struktur som är
+öppen att granska. Läsningen, och besluten, är läsarens.
+
+---
 
 ## Källor
 
-Samtliga dokument hämtade 2026-09-13 från respektive partis officiella
-webbplats. Fullständiga URL:er och SHA256-checksummor i `manifest/INDEX.md`.
+Samtliga dokument hämtade 2026-09-13 från respektive utgivares officiella
+webbplats. Fullständiga URL:er och SHA256 i `domains/kallor.yaml` och
+`manifest/INDEX.md`.
+
+## Licens
+
+Koden är fri att använda. **Källdokumenten tillhör respektive utgivare** och
+ingår här som citat för analysändamål.
