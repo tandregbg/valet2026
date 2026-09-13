@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titel %}Valkompass &middot; resultat{% endblock %}
+{% block innehall %}
+
+<h1>Ditt resultat</h1>
+
+<div class="varning">
+  <p style="margin:0 0 8px">{{ forbehall }}</p>
+  <p style="margin:0">{{ mater_inte_avstand }}</p>
+</div>
+
+<p class="ingress">
+  {{ antal_besvarade }} besvarade frågor{% if antal_hoppade %},
+  {{ antal_hoppade }} överhoppade{% endif %}.
+</p>
+
+{% for r in resultat %}
+<a class="resultatrad {{ 'under-troskel' if r.under_troskel }}"
+   href="{{ url_for('kompass.resultat_kalla', parti=r.parti) }}">
+  <div class="resultathuvud">
+    <span class="partitagg" style="background:{{ partifarger.get(r.parti,'#888') }}">{{ r.parti }}</span>
+    <span class="resultatnamn">{{ parti_namn.get(r.parti, r.parti) }}</span>
+    <span class="resultatprocent">{{ r.procent }}%</span>
+  </div>
+  <div class="resultatstapel">
+    <div class="resultatfyll" style="width:{{ r.procent }}%;
+         background:{{ partifarger.get(r.parti,'#888') }}"></div>
+  </div>
+  <div class="resultatfot">
+    belägg för {{ r.tackning }} av {{ r.av_totalt }} besvarade påståenden
+    {% if r.under_troskel %}
+      &middot; <strong>tunt underlag</strong> (under {{ min_tackning }})
+    {% endif %}
+  </div>
+</a>
+{% else %}
+<div class="kort"><p>Inga källor hade belägg för dina svar.</p></div>
+{% endfor %}
+
+<div class="panelblock panelblock-varning" style="margin-top:20px">
+  <h3>Om täckningssiffran</h3>
+  <p>
+    En källa med 90&nbsp;% på 8 belägg är inte en bättre matchning än
+    72&nbsp;% på 31. Läs alltid procenten tillsammans med hur många
+    påståenden den bygger på.
+  </p>
+  <p>Klicka på en källa för att se de faktiska förslagen bakom siffran.</p>
+</div>
+
+<p class="ingress" style="margin-top:16px">
+  <a href="{{ url_for('kompass.start') }}">Gör om testet</a>
+</p>
+
+{% endblock %}

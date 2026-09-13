@@ -168,7 +168,68 @@ def svar():
     return jsonify({"ok": True, "next": url_for("kompass.resultat")})
 
 
+FORBEHALL = (
+    "Procenten visar hur väl dina svar stämmer med de förslag som går att "
+    "belägga i respektive dokument. Den bygger på maskinellt extraherad text "
+    "där 40 % av underlaget vilar på en enda nyckelordsträff. Den är en "
+    "ingång till materialet, inte ett omdöme."
+)
+
+MATER_INTE_AVSTAND = (
+    "Matchningen mäter var dina svar sammanfaller med förslag källan faktiskt "
+    "driver. Den mäter inte avstånd — att ett förslag saknas i ett dokument "
+    "betyder inte att avsändaren är emot det."
+)
+
+
 @bp.route("/kompass/resultat")
 def resultat():
-    """Implementeras i CR-004. Placeholder tills dess."""
-    return redirect(url_for("kompass.start"))
+    """CR-004 niva 1: rangordnade kallor med obligatorisk tackningssiffra."""
+    import matchning as M
+    from app import DOMAN_NAMN, PARTIFARGER, PARTI_NAMN
+
+    svar = session.get("kompass_svar") or []
+    if not svar:
+        return redirect(url_for("kompass.start"))
+
+    resultat_ = M.berakna(svar)
+    besvarade = [s for s in svar if not s.get("hoppad") and s.get("varde") is not None]
+
+    return render_template(
+        "kompass_resultat.html",
+        resultat=resultat_,
+        valda=session.get("kompass_valda") or [],
+        antal_besvarade=len(besvarade),
+        antal_hoppade=len(svar) - len(besvarade),
+        min_tackning=M.MIN_TACKNING,
+        forbehall=FORBEHALL, mater_inte_avstand=MATER_INTE_AVSTAND,
+        doman_namn=DOMAN_NAMN, partifarger=PARTIFARGER, parti_namn=PARTI_NAMN,
+    )
+
+
+@bp.route("/kompass/resultat/<parti>")
+def resultat_kalla(parti):
+    """CR-004 niva 2+3: domannedbrytning, oenighet, och kallforslagen."""
+    import matchning as M
+    from app import DOMAN_NAMN, DOMAN_FARG, PARTIFARGER, PARTI_NAMN
+
+    svar = session.get("kompass_svar") or []
+    if not svar:
+        return redirect(url_for("kompass.start"))
+
+    resultat_ = M.berakna(svar)
+    kalla = next((r for r in resultat_ if r["parti"] == parti), None)
+    if not kalla:
+        return redirect(url_for("kompass.resultat"))
+
+    return render_template(
+        "kompass_resultat_kalla.html",
+        kalla=kalla,
+        domaner=M.per_doman(kalla),
+        oenighet=M.oenighet(kalla),
+        valda=session.get("kompass_valda") or [],
+        min_tackning=M.MIN_TACKNING,
+        mater_inte_avstand=MATER_INTE_AVSTAND,
+        doman_namn=DOMAN_NAMN, doman_farg=DOMAN_FARG,
+        partifarger=PARTIFARGER, parti_namn=PARTI_NAMN,
+    )

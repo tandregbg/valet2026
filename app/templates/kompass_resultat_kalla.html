@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block titel %}{{ parti_namn.get(kalla.parti, kalla.parti) }} &middot; resultat{% endblock %}
+{% block innehall %}
+
+<h1>
+  <span class="partitagg" style="background:{{ partifarger.get(kalla.parti,'#888') }}">{{ kalla.parti }}</span>
+  {{ parti_namn.get(kalla.parti, kalla.parti) }}
+</h1>
+
+<p class="ingress">
+  {{ kalla.procent }}% överensstämmelse, belägg för {{ kalla.tackning }} av
+  {{ kalla.av_totalt }} besvarade påståenden.
+  {% if kalla.under_troskel %}
+  <strong>Tunt underlag</strong> &mdash; under {{ min_tackning }} belägg.
+  {% endif %}
+</p>
+
+<div class="varning">{{ mater_inte_avstand }}</div>
+
+<h2>Per område</h2>
+{% for d in domaner %}
+<details class="domanblock" {% if d.doman in valda %}open{% endif %}>
+  <summary>
+    <span class="domanprick" style="background:{{ doman_farg.get(d.doman,'#888') }}"></span>
+    <span class="domannamn">{{ doman_namn.get(d.doman, d.doman) }}</span>
+    {% if d.doman in valda %}<span class="tagg">ditt val</span>{% endif %}
+    <span class="domansiffra">{{ d.procent }}% &middot; {{ d.n }} belägg</span>
+  </summary>
+  {% for t in d.traffar %}
+  <div class="traff">
+    <div class="traffmeta">
+      <span class="traffsvar">Ditt svar: {{ t.svar }}</span>
+      {% if t.hallning == 'emot' %}<span class="tagg">källan avvisar</span>{% endif %}
+      {% if t.svag_traff %}<span class="tagg">osäkert underlag</span>{% endif %}
+    </div>
+    <p class="traffpastaende">{{ t.text }}</p>
+    {% if t.originaltext %}
+    <details class="traffkalla">
+      <summary>Originaltext ur källan</summary>
+      <div class="originalruta">{{ t.originaltext }}</div>
+    </details>
+    {% endif %}
+  </div>
+  {% endfor %}
+</details>
+{% endfor %}
+
+{% if oenighet %}
+<h2>Där ni skiljer er åt</h2>
+<p class="ingress">
+  Påståenden där ditt svar drar åt motsatt håll mot vad källan föreslår.
+</p>
+{% for t in oenighet %}
+<div class="traff traff-oenig">
+  <div class="traffmeta">
+    <span class="traffsvar">Ditt svar: {{ t.svar }}</span>
+    <span class="granskliten">{{ doman_namn.get(t.doman, t.doman) }}</span>
+  </div>
+  <p class="traffpastaende">{{ t.text }}</p>
+</div>
+{% endfor %}
+{% endif %}
+
+<p class="ingress" style="margin-top:20px">
+  <a href="{{ url_for('kompass.resultat') }}">Tillbaka till resultatet</a>
+</p>
+
+{% endblock %}
