@@ -2,7 +2,7 @@
 
 Index över ändringsförslag för val2026-projektet.
 
-Next available CR number: **CR-006**
+Next available CR number: **CR-007**
 
 ---
 
@@ -15,6 +15,7 @@ Next available CR number: **CR-006**
 | [CR-003](CR-003_matchningsalgoritm.md) | Matchningsalgoritm | **Implemented** | Medium | CR-002 |
 | [CR-004](CR-004_resultatvy.md) | Resultatvy - matchning med spårbarhet | **Implemented** | Medium | CR-003 |
 | [CR-005](CR-005_omsida_kallor_och_process.md) | Om-sida med källreferenser och processbeskrivning | **Implemented** | High | - |
+| [CR-006](CR-006_navigering.md) | Navigering till alla vyer | **Implemented** | High | - |
 
 ---
 

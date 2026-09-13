@@ -13,10 +13,24 @@
       Valmanifest <strong>2026</strong>
     </a>
     <nav>
-      <a href="{{ url_for('index') }}">Täckning</a>
-      <a href="{{ url_for('axlar') }}">Konfliktaxlar</a>
-      <a href="{{ url_for('inramning') }}">Inramning</a>
-      <a href="{{ url_for('om') }}">Metod</a>
+      {#- Grupperad: utforska datan, anvand den, forsta den. Aktiv vy
+          markeras via request.endpoint sa att man ser var man ar. -#}
+      <span class="navgrupp">
+        <a href="{{ url_for('index') }}"
+           class="{{ 'aktiv' if request.endpoint == 'index' }}">Täckning</a>
+        <a href="{{ url_for('axlar') }}"
+           class="{{ 'aktiv' if request.endpoint == 'axlar' }}">Konfliktaxlar</a>
+        <a href="{{ url_for('inramning') }}"
+           class="{{ 'aktiv' if request.endpoint == 'inramning' }}">Inramning</a>
+      </span>
+      <span class="navgrupp">
+        <a href="{{ url_for('kompass.start') }}"
+           class="navprimar {{ 'aktiv' if request.blueprint == 'kompass' }}">Valkompass</a>
+        <a href="{{ url_for('granskning.index') }}"
+           class="{{ 'aktiv' if request.blueprint == 'granskning' }}">Granskning</a>
+        <a href="{{ url_for('om') }}"
+           class="{{ 'aktiv' if request.endpoint == 'om' }}">Om &amp; källor</a>
+      </span>
     </nav>
   </div>
 </header>
@@ -26,9 +40,10 @@
 </main>
 
 <footer class="wrap fot">
-  <p>Källa: partiernas egna valmanifest, hämtade 2026-09-13.
-     Taggningen är maskinell och oreviderad &mdash; se
-     <a href="{{ url_for('om') }}">Metod</a>.</p>
+  <p>Källa: partiernas egna valmanifest, hämtade 2026-09-13 från respektive
+     partis officiella webbplats. Taggningen av textstyckena är maskinell;
+     valkompassens påståenden är redaktionellt granskade.
+     <a href="{{ url_for('om') }}">Källor, metod och brister</a>.</p>
 </footer>
 </body>
 </html>

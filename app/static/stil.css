@@ -379,3 +379,15 @@ table.enkel td.num{text-align:right; font-variant-numeric:tabular-nums}
   .jamfrad{grid-template-columns:1fr; gap:5px}
   .jamfkol-a{border-left-color:#b8860b}
 }
+
+/* ---------- navigering (CR-006) ---------- */
+.topp nav{display:flex; gap:18px; flex-wrap:wrap; align-items:center}
+.navgrupp{display:flex; gap:16px; flex-wrap:wrap; align-items:center}
+.navgrupp + .navgrupp{padding-left:17px; border-left:1px solid var(--linje)}
+.topp nav a.aktiv{color:var(--text); font-weight:600}
+.topp nav a.navprimar{color:var(--accent); font-weight:600}
+.topp nav a.navprimar.aktiv{text-decoration:underline; text-underline-offset:4px}
+@media (max-width:620px){
+  .navgrupp + .navgrupp{padding-left:0; border-left:none}
+  .topp nav{gap:11px}
+}
