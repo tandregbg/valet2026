@@ -35,10 +35,6 @@ def ladda():
 
 
 TAX, RADER = ladda()
-
-# CR-002: granskningsgranssnitt for pastaendebanken
-from granskning import bp as granskning_bp   # noqa: E402
-app.register_blueprint(granskning_bp)
 DOMAN_NAMN = {d["id"]: d["namn"] for d in TAX["domaner"]}
 DOMAN_FARG = {d["id"]: d["farg"] for d in TAX["domaner"]}
 SUB_NAMN = {s["id"]: s["namn"] for d in TAX["domaner"] for s in d["subdomaner"]}
@@ -49,6 +45,11 @@ PARTI_NAMN = {r["parti"]: r["parti_namn"] for r in RADER}
 
 def partier():
     return [p for p in PARTIORDNING if p in PARTI_NAMN]
+
+
+# CR-002: granskningsgranssnitt for pastaendebanken
+from granskning import bp as granskning_bp   # noqa: E402
+app.register_blueprint(granskning_bp)
 
 
 @app.route("/")
