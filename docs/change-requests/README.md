@@ -20,7 +20,7 @@ Next available CR number: **CR-005**
 ## Beroendekedja
 
 ```
-CR-002 (påståendebank)          <- kritisk väg, Draft
+CR-002 (påståendebank)          <- kritisk väg, levererad
    │
    ├──> CR-001 (frågemotor)
    │
