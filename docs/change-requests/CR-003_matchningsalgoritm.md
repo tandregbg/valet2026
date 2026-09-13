@@ -5,8 +5,9 @@
 | **CR Number** | CR-003 |
 | **Date** | 2026-09-13 |
 | **Author** | Claude Code |
-| **Status** | Draft |
+| **Status** | Proposed |
 | **Priority** | Medium |
+| **Complexity** | Medium |
 | **Estimated Scope** | app, beräkningslogik |
 | **Related CRs** | CR-001 (levererar svaren), CR-002 (levererar påståendena), CR-004 (visar resultatet) |
 | **Depends On** | CR-002 (matchning kräver källkopplade påståenden) |
@@ -118,40 +119,38 @@ täckningssiffran är procenten vilseledande.
 
 ### Viktning mot valda domäner
 
-Öppen fråga. Två alternativ:
-
-**A. Ingen viktning.** Alla 50 påståenden väger lika. De valda domänerna får
-redan genomslag genom att de utgör 30 av 50 frågor.
-
-**B. Explicit viktning.** Påståenden i valda domäner väger dubbelt.
-
-Alternativ A är förmodligen rätt: viktningen finns redan inbyggd i
-frågefördelningen, och dubbel viktning riskerar att göra resultatet nästan
-helt bestämt av domänvalet. Behöver testas mot riktiga svar.
+**Beslutat: alternativ A, ingen extra viktning.** Alla 50 påståenden väger
+lika. De valda domänerna får redan genomslag genom att de utgör 30 av 50
+frågor.
 
 ---
 
-## Open Questions
+## Beslutade frågor (2026-09-13)
 
 **1. Hur kodas `emot`?**
-CR-002 noterar att motstånd sällan står explicit i dokumenten. Om `emot` i
-praktiken aldrig förekommer blir algoritmen enbart en mätning av positiv
-överensstämmelse. Det är hanterbart, men måste då sägas rakt ut i
-resultatvyn.
+`emot` sätts endast vid explicit avvisande i källtexten (CR-002 beslut 4).
+I praktiken blir det sällsynt. Algoritmen mäter därför i huvudsak positiv
+överensstämmelse, och resultatvyn måste säga det rakt ut:
 
-**2. Minsta täckning för att visa en matchning?**
-Om en källa bara har belägg för 5 av 50 påståenden — ska den visas alls?
-Förslag: visa, men gråmarkerad med tydlig varning under en tröskel
-(exempelvis 15 belägg).
+> Matchningen mäter var dina svar sammanfaller med förslag källan faktiskt
+> driver. Den mäter inte avstånd — att ett förslag saknas i ett dokument
+> betyder inte att avsändaren är emot det.
 
-**3. Ska överhoppade frågor påverka?**
-Nej enligt CR-001. Men de minskar underlaget, vilket bör synas i
-täckningssiffran.
+**2. Minsta täckning?**
+Tröskel: **15 belägg av 50**. Under den visas källan gråmarkerad med varning,
+aldrig dold.
 
-**4. Hanterar algoritmen att samma sakfråga kan förekomma i flera påståenden?**
-Om påståendebanken innehåller två närliggande formuleringar av samma sak får
-den frågan dubbel vikt av misstag. CR-002 ska fånga dubbletter, men
-algoritmen bör tåla att den inte gör det perfekt.
+**3. Överhoppade frågor?**
+Påverkar inte procenten, men sänker täckningssiffran.
+
+**4. Dubbletter?**
+Algoritmen deduplicerar på `subdoman` + normaliserad text före beräkning, som
+skyddsnät om CR-002:s dubblettfilter missar något.
+
+**5. Domänviktning?**
+Alternativ A: ingen extra viktning. De valda domänerna får redan genomslag
+genom att utgöra 30 av 50 frågor. Dubbel viktning skulle göra resultatet
+nästan helt bestämt av domänvalet.
 
 ---
 
@@ -191,8 +190,6 @@ algoritmen bör tåla att den inte gör det perfekt.
 
 ---
 
-## Nästa steg innan Proposed
+## Open Questions
 
-1. CR-002 måste först visa om `emot` är kodbart i praktiken (öppen fråga 1).
-2. Testa viktning A mot B på 5-10 riktiga svarsomgångar.
-3. Fastställ tröskel för minsta täckning.
+Inga blockerande.

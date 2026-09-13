@@ -5,8 +5,9 @@
 | **CR Number** | CR-002 |
 | **Date** | 2026-09-13 |
 | **Author** | Claude Code |
-| **Status** | Draft |
+| **Status** | Proposed |
 | **Priority** | High |
+| **Complexity** | Medium-High |
 | **Estimated Scope** | domains, ny datafil, redaktionell process |
 | **Related CRs** | CR-001 (frågemotor konsumerar banken), CR-003 (matchning) |
 | **Depends On** | None |
@@ -20,9 +21,9 @@ dokument. De 1 528 extraherade förslagen kan inte användas som frågor rakt av
 de är olika långa, skrivna i partiets egen röst, och många innehåller
 formuleringar som avslöjar avsändaren.
 
-Den här CR:en definierar hur påståendebanken byggs — och den är avsiktligt
-**Draft**, för den innehåller det svåraste öppna problemet i hela
-valkompasskonceptet.
+Den här CR:en definierar hur påståendebanken byggs. Den innehåller
+valkompasskonceptets svåraste problem: hur partiskt formulerade textstycken
+blir neutrala påståenden utan att införa systematisk snedvridning.
 
 **Current Problems:**
 1. Förslagen är formulerade av avsändaren och bär deras röst. Ett påstående
@@ -98,12 +99,32 @@ Filtrera bort det som inte kan bli påståenden:
 
 | Filter | Motiv |
 |--------|-------|
-| `typ != "reform"` | Principer och kritik är inte graderbara som sakförslag |
-| `traffsakerhet <= 1` | 40% av materialet, för osäkert taggat |
+| `typ` inte i (`reform`, `mal`) | Principer och kritik är inte graderbara som sakförslag |
 | Längd > 60 ord | För långa att komprimera utan tolkning |
 | Dubbletter över källor | Samma sakfråga från flera avsändare slås ihop |
 
-Kvar: uppskattningsvis 250-350 kandidater. Behöver mätas.
+**Uppmätt utfall: 305 kandidater.** Fördelning per domän varierar från 6
+(bostad) till ~80 (klimat).
+
+### Beslutat: traffsakerhet=1 släpps in
+
+Det strama filtret (`traffsakerhet > 1`) gav bara 141 kandidater och lämnade
+**8 av 12 domäner under CR-001:s minimum på 10**. Med det underlaget hade två
+tredjedelar av domänvalen varit omöjliga att välja.
+
+Beslut 2026-09-13: tillåt `traffsakerhet = 1` och `typ = mal`. Det ger 305
+kandidater och 10 av 12 domäner över minimum.
+
+**Priset, explicit:** kandidatunderlaget innehåller nu de rader som vilar på en
+enda nyckelordsträff — exakt den kategori där `isk`-buggen dolde sig. Det
+hanteras genom:
+
+1. Varje kandidat med `traffsakerhet = 1` **måste** granskas manuellt innan
+   den kan bli påstående. Ingen automatisk godkännning.
+2. Fältet `svag_traff: true` följer med till `pastaenden.jsonl` och vidare till
+   resultatvyn.
+3. Bostad (6) och landsbygd (9) når fortfarande inte 10 och markeras som
+   otillgängliga för domänval (CR-001 Phase 1).
 
 Varje kandidat får ett förslag till omskrivning genererat maskinellt, som
 **utgångspunkt för granskningen** — inte som färdigt påstående.
@@ -162,34 +183,38 @@ Det andra alternativet är ärligare än att fylla ut med dåliga påståenden.
 
 ---
 
-## Open Questions
-
-Det här är skälet till att CR:en är Draft.
+## Beslutade frågor (2026-09-13)
 
 **1. Vem granskar?**
-150 påståenden à ~2 minuter är ungefär 5 timmars redaktionellt arbete. Det är
-inte en eftermiddag. Ska det göras av en person, eller behövs två oberoende
-för att fånga systematisk snedvridning?
+En person i v1. Granskningsgränssnittet byggs så att dubbelgranskning kan
+läggas till senare (fältet `granskad_av` är en lista, inte en sträng).
+Deploy-målet är lokalt, vilket sänker risken av en enskild granskares bias.
 
-**2. Hur hanteras påståenden som bara en källa driver?**
-Ett påstående som bara förekommer i ett dokument ger automatiskt hög matchning
-med den avsändaren om användaren instämmer. Det kan vara korrekt — eller ge
-oproportionerligt utslag. Behövs viktning?
+**2. Påståenden som bara en källa driver?**
+Behålls utan viktning. Täckningssiffran i CR-004 gör det synligt när en
+matchning bygger på få belägg, vilket är en ärligare lösning än dold viktning.
 
-**3. Ska påståenden som ingen driver finnas med?**
-För att mäta avstånd behövs kanske påståenden som *alla* källor avvisar. De
-finns inte i materialet, eftersom materialet bara innehåller vad avsändarna
-själva föreslår. Ska sådana konstrueras, och i så fall av vem?
+**3. Påståenden som ingen driver?**
+Nej. Materialet innehåller bara vad källorna själva föreslår, och att
+konstruera motförslag vore att lägga in egna formuleringar i en bank som ska
+vara spårbar till källtext.
 
-**4. Hur hanteras motstridiga förslag inom samma sakfråga?**
-Två källor kan vilja motsatta saker i samma fråga. Blir det ett påstående där
-den ena är "för" och den andra "emot", eller två separata påståenden?
-Det första är renare men kräver att man tolkar in motstånd som inte står
-skrivet.
+**4. Motstridiga förslag inom samma sakfråga?**
+Ett påstående per sakfråga, med `hallning: for|emot` per källa. `emot` sätts
+**endast** när dokumentet explicit avvisar — aldrig genom tolkning av tystnad.
+Se CR-003.
 
-**5. Krävs extern granskning innan publicering?**
-Om verktyget publiceras bör någon utan koppling till projektet granska
-påståendebanken för snedvridning. Vem, och enligt vilka kriterier?
+**5. Extern granskning?**
+Krävs inte för lokalt bruk. Blir ett krav om verktyget publiceras publikt;
+noteras i README som en förutsättning för publicering.
+
+---
+
+## Open Questions
+
+Inga blockerande. Kvarstående att mäta under implementation:
+
+- Faktisk granskningstakt (uppskattat ~2 min/påstående, verifieras efter 20).
 
 ---
 
