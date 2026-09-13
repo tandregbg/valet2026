@@ -4,6 +4,53 @@ Alla ändringar i detta projekt dokumenteras här.
 Format enligt [Keep a Changelog](https://keepachangelog.com/sv/1.1.0/),
 versionshantering enligt [SemVer](https://semver.org/lang/sv/).
 
+## [0.5.0] - 2026-09-13
+
+Valkompass levererad. CR-001 till CR-004 implementerade i beroendeordning.
+
+### Tillagt
+
+- **CR-002 påståendebank** (`domains/kandidater.py`, `app/granskning.py`)
+  291 kandidater genererade ur 1 528 förslag, plus granskningsgränssnitt där
+  varje kandidat måste godkännas av en människa. Granskningskriterierna står
+  i gränssnittet, inte i ett dokument.
+- **CR-001 frågemotor** (`app/kompass.py`)
+  Domänval (max 3) och 50 påståenden graderade 1-5. Deterministiskt urval.
+- **CR-003 matchning** (`app/matchning.py`)
+  Överensstämmelse per källa, normaliserad mot antal belägg.
+- **CR-004 resultatvy** (`app/templates/kompass_resultat*.html`)
+  Tre nivåer: staplar, domännedbrytning, källförslag med originaltext.
+- Pipeline-config i `CLAUDE.md`, venv, 25 tester.
+
+### Beslut under leverans
+
+**Filternivån luckrades upp.** Det strama filtret gav 141 kandidater och
+lämnade 8 av 12 domäner under minimum. Beslut: släpp in `traffsakerhet=1`
+och `typ=mal`, vilket ger 291 kandidater och 10 valbara domäner. Priset är
+att 133 kandidater vilar på en enda nyckelordsträff - de markeras
+`svag_traff`, sorteras först i granskningskön och märks i frågevyn.
+
+**Bostad (6) och landsbygd (8)** når inte minimum och är inte valbara.
+Ärligare än att fylla ut med svagt underlag.
+
+### Guardrails i kod
+
+- Frånvaro tolkas aldrig som motstånd: `saknas` är ett eget tillstånd,
+  aldrig 0. Enhetstest verifierar.
+- Matchningsprocent visas aldrig utan täckningssiffra. Testat.
+- Originaltext och källhänvisning följer varje enhet hela vägen.
+- Inga rekommendationer eller tolkande sammanfattningar.
+
+### Viktigt om nuvarande data
+
+`pastaenden.jsonl` innehåller **147 maskingodkända påståenden**, märkta
+`granskad_av: ["AUTO"]`. De är INTE redaktionellt granskade och flera är
+ogrammatiska eller bär avsändarens röst. De finns för att verifiera flödet.
+
+**Innan valkompassen används på riktigt måste de granskas om** via
+`/granskning`. Det är den mänskliga grinden CR-002 specificerar, och den
+är inte genomförd.
+
 ## [0.1.0] - 2026-09-13
 
 Första sammanhållna versionen. Insamling av samtliga riksdagspartiers

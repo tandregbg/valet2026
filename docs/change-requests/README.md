@@ -6,14 +6,14 @@ Next available CR number: **CR-005**
 
 ---
 
-## Aktiva
+## Levererade 2026-09-13 (v0.5.0)
 
 | CR | Titel | Status | Prioritet | Beror på |
 |----|-------|--------|-----------|----------|
-| [CR-001](CR-001_valkompass_domanval_och_fragemotor.md) | Valkompass - domänval och frågemotor | Proposed | High | CR-002 |
-| [CR-002](CR-002_pastaendebank.md) | Påståendebank - från taggade förslag till graderbara påståenden | **Draft** | High | - |
-| [CR-003](CR-003_matchningsalgoritm.md) | Matchningsalgoritm | **Draft** | Medium | CR-002 |
-| [CR-004](CR-004_resultatvy.md) | Resultatvy - matchning med spårbarhet | Proposed | Medium | CR-003 |
+| [CR-001](CR-001_valkompass_domanval_och_fragemotor.md) | Valkompass - domänval och frågemotor | **Implemented** | High | CR-002 |
+| [CR-002](CR-002_pastaendebank.md) | Påståendebank | **Implemented** | High | - |
+| [CR-003](CR-003_matchningsalgoritm.md) | Matchningsalgoritm | **Implemented** | Medium | CR-002 |
+| [CR-004](CR-004_resultatvy.md) | Resultatvy - matchning med spårbarhet | **Implemented** | Medium | CR-003 |
 
 ---
 
