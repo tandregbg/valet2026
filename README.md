@@ -77,9 +77,23 @@ val2026/
 ```bash
 python3 -m venv .venv && .venv/bin/pip install flask pyyaml pytest
 .venv/bin/python domains/extrahera.py     # bygg om forslag.jsonl
-.venv/bin/python -m pytest tests/ -q      # 30 tester
-.venv/bin/python app/app.py               # http://127.0.0.1:5001
+.venv/bin/python -m pytest tests/ -q      # 34 tester
+.venv/bin/python app/app.py               # startar servern
 ```
+
+Appen binder till `0.0.0.0` och skriver ut både den lokala adressen och
+nätverksadressen vid start, så den går att testa från telefon eller annan
+dator på samma nät.
+
+| Miljövariabel | Default | Effekt |
+|---|---|---|
+| `VAL2026_HOST` | `0.0.0.0` | Sätt till `127.0.0.1` för att bara lyssna lokalt |
+| `VAL2026_PORT` | `5001` | Port |
+| `VAL2026_SECRET` | slumpas | Sessionsnyckel; sätt för att behålla sessioner över omstart |
+
+**Appen har ingen inloggning.** Alla på nätverket kan nå den, inklusive
+`/granskning` som skriver till datafilerna. Kör bara på nät du litar på, och
+använd en riktig WSGI-server om den någonsin ska exponeras bredare.
 
 ## Vyer
 

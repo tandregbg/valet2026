@@ -24,7 +24,10 @@ verify:
   process: "python3 app/app.py"
 deploy:
   target: local
-  note: "Lokalt är produktion. Appen körs på 127.0.0.1:5001, repot har inga remotes."
+  note: >-
+    Lokalt är produktion. Appen binder till 0.0.0.0:5001 för test på internt
+    nät och skriver ut nätverksadressen vid start. Ingen autentisering -
+    endast betrodda nät.
 guardrails:
   - "Taggning är heuristisk. Varje vy som visar härledd data måste redovisa sin osäkerhet."
   - "Frånvaro av belägg får aldrig tolkas som motstånd. 'saknas' är ett eget tillstånd, aldrig 0."

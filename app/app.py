@@ -13,6 +13,9 @@ Data laddas en gang vid start fran domains/forslag.jsonl.
 from collections import Counter, defaultdict
 from pathlib import Path
 import json
+import os
+import secrets
+import socket
 
 import yaml
 from flask import Flask, abort, render_template, request
@@ -21,7 +24,10 @@ ROOT = Path(__file__).resolve().parent.parent
 app = Flask(__name__)
 # Sessionsnyckel for kompassens mellanlagring. Lokalt bruk (deploy.target=local);
 # byt till miljovariabel om appen nagonsin exponeras.
-app.secret_key = "val2026-lokal-utveckling"
+# Sessionsnyckel. Slumpas per start om VAL2026_SECRET inte satts - da
+# nollstalls pagaende kompassessioner vid omstart, vilket ar ratt beteende
+# for lokalt bruk. Satt variabeln for att behalla sessioner over omstart.
+app.secret_key = os.environ.get("VAL2026_SECRET") or secrets.token_hex(32)
 
 PARTIORDNING = ["V", "S", "MP", "C", "L", "KD", "M", "SD"]   # vanster -> hoger
 PARTIFARGER = {
@@ -419,5 +425,37 @@ def corpus_taggade(rader):
     return len(rader)
 
 
+def lokal_ip():
+    """Adressen andra enheter pa natet nar appen pa. Ingen trafik skickas -
+    socketen anvands bara for att fraga OS vilket interface som skulle
+    anvandas mot internet."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("192.0.2.1", 1))     # TEST-NET-1, aldrig routad
+        return s.getsockname()[0]
+    except OSError:
+        return None
+    finally:
+        s.close()
+
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    # Binder till 0.0.0.0 sa att appen nas fran andra enheter pa samma nat.
+    # Satt VAL2026_HOST=127.0.0.1 for att bara lyssna lokalt.
+    host = os.environ.get("VAL2026_HOST", "0.0.0.0")
+    port = int(os.environ.get("VAL2026_PORT", "5001"))
+
+    print("\n  Valmanifest 2026")
+    print(f"  Lokalt:    http://127.0.0.1:{port}")
+    if host == "0.0.0.0":
+        ip = lokal_ip()
+        if ip:
+            print(f"  Nätverket: http://{ip}:{port}")
+        else:
+            print("  Nätverket: kunde inte avgöra IP-adress")
+        print("\n  Lyssnar på alla gränssnitt. Appen har ingen inloggning —")
+        print("  alla på nätverket kan nå den, inklusive granskningsvyn som")
+        print("  skriver till datafilerna. Kör bara på nät du litar på.")
+    print()
+
+    app.run(host=host, port=port, debug=False)
