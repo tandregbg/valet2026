@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block titel %}Täckningsmatris &middot; Valmanifest 2026{% endblock %}
+{% block innehall %}
+
+<h1>Vad pratar partierna om &mdash; och vad tiger de om?</h1>
+
+<div class="tvakolumn">
+<div class="huvudkolumn">
+
+<div class="matris-hylsa">
+<table class="matris">
+  <thead>
+    <tr>
+      <th class="vanster">Domän</th>
+      {% for p in partier %}
+      <th>
+        <span class="partihuvud">
+          <span class="prick" style="background:{{ partifarger[p] }}"></span>
+          <span>{{ p }}</span>
+        </span>
+      </th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for rad in rader %}
+    <tr>
+      <td class="domancell" style="--dfarg:{{ rad.farg }}">
+        <a href="{{ url_for('doman', doman_id=rad.id) }}">{{ rad.namn }}</a>
+        <span class="liten">{{ rad.totalt }} förslag totalt</span>
+      </td>
+      {% for c in rad.celler %}
+      <td>
+        <a class="cell {{ 'tyst' if c.tyst }}"
+           href="{{ url_for('doman', doman_id=rad.id, parti=c.parti) }}"
+           style="background:{% if not c.tyst %}color-mix(in srgb, {{ rad.farg }} {{ (c.intensitet*70)|round|int }}%, var(--yta)){% endif %}"
+           title="{{ parti_namn[c.parti] }} &middot; {{ rad.namn }}: {{ c.antal }} förslag ({{ c.andel }}% av partiets manifest)">
+          <span class="n">{{ c.antal if c.antal else '&mdash;'|safe }}</span>
+          {% if c.antal %}<span class="pct">{{ c.andel }}%</span>{% endif %}
+        </a>
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2>Underlagets storlek per parti</h2>
+<p class="ingress">
+  Manifesten är olika långa, så absoluta tal går inte att jämföra rakt av.
+  C och MP dominerar i volym eftersom deras dokument är betydligt mer
+  omfattande &mdash; därför bygger färgen på andel, inte antal.
+</p>
+<table class="enkel">
+  <thead>
+    <tr><th>Parti</th><th>Förslag</th><th style="width:55%">Andel av underlaget</th></tr>
+  </thead>
+  <tbody>
+  {% set maxv = totalt_parti.values()|max %}
+  {% for p in partier %}
+    <tr>
+      <td>
+        <span class="partitagg" style="background:{{ partifarger[p] }}">{{ p }}</span>
+        {{ parti_namn[p] }}
+      </td>
+      <td class="num">{{ totalt_parti[p] }}</td>
+      <td>
+        <div class="stapel" style="width:{{ (totalt_parti[p]/maxv*100)|round|int }}%;
+             background:{{ partifarger[p] }}"></div>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+</div>
+
+<aside class="sidopanel">
+
+  <div class="panelblock">
+    <h3>Om underlaget</h3>
+    <p>
+      <strong>{{ totalt }} förslag</strong> ur åtta valmanifest, taggade mot
+      en neutral sakpolitisk taxonomi som inte följer något partis egen
+      kapitelindelning.
+    </p>
+  </div>
+
+  <div class="panelblock">
+    <h3>Så läser du matrisen</h3>
+
+    <div class="nyckel">
+      <div class="nyckel-rad">
+        <div class="nyckel-skala">
+          <span class="legend-ruta" style="background:color-mix(in srgb,#4a7c8c 6%,#fff)"></span>
+          <span class="legend-ruta" style="background:color-mix(in srgb,#4a7c8c 24%,#fff)"></span>
+          <span class="legend-ruta" style="background:color-mix(in srgb,#4a7c8c 42%,#fff)"></span>
+          <span class="legend-ruta" style="background:color-mix(in srgb,#4a7c8c 60%,#fff)"></span>
+          <span class="legend-ruta" style="background:color-mix(in srgb,#4a7c8c 78%,#fff)"></span>
+        </div>
+        <span class="nyckel-txt">liten &rarr; stor andel av manifestet</span>
+      </div>
+      <div class="nyckel-rad">
+        <div class="nyckel-skala">
+          <span class="legend-ruta tyst"></span>
+        </div>
+        <span class="nyckel-txt">tystnad &mdash; inget förslag alls</span>
+      </div>
+    </div>
+
+    <p>
+      <strong>Kulören</strong> visar vilken domän raden gäller.
+      <strong>Mättnaden</strong> visar hur stor andel av partiets manifest
+      som ligger där.
+    </p>
+    <p>
+      Andelen används i stället för antalet eftersom manifesten är olika
+      långa &mdash; annars hade C och MP färgats mörkt överallt bara för
+      att deras dokument är längst.
+    </p>
+    <p>
+      Stora siffran är ändå antal förslag, den lilla är andelen som färgen
+      bygger på. <strong>De streckade rutorna är ofta mer talande än
+      siffrorna.</strong>
+    </p>
+  </div>
+
+  <div class="panelblock panelblock-varning">
+    <h3>Vad andelen inte säger</h3>
+    <p>
+      Andelen mäter hur mycket <em>text</em> partiet ägnar frågan. Det är
+      inte samma sak som hur viktig den är för dem &mdash; ett parti kan
+      säga något avgörande på två meningar.
+    </p>
+    <p>
+      Taggningen är maskinell och oreviderad. Se
+      <a href="{{ url_for('om') }}">Metod</a> för felkällorna.
+    </p>
+  </div>
+
+</aside>
+</div>
+
+{% endblock %}

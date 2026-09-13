@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block titel %}Konfliktaxlar &middot; Valmanifest 2026{% endblock %}
+{% block innehall %}
+
+<h1>Konfliktaxlar</h1>
+<p class="ingress">
+  Det tvärgående lagret. En axel skär genom flera sakområden samtidigt &mdash;
+  därför kan KD:s regionavveckling hamna bredvid L:s statliga skola trots att
+  de tillhör olika domäner.
+</p>
+
+<div class="varning">
+  <strong>Redovisas som belägg, inte som position.</strong> För att skilja
+  ståndpunkt från omnämnande krävs entydiga fraser &mdash; ordet
+  &rdquo;valfrihet&rdquo; säger inget i sig, eftersom det förekommer både hos
+  den som vill utöka och den som vill avskaffa den. Med tillräckligt snäva
+  fraser blir träffarna få, och för få för att en positionsskala ska betyda
+  något. Nedan visas därför de enskilda träffarna så att du kan bedöma dem
+  själv. Antalet säger mer om ordval än om hur viktig frågan är för partiet.
+</div>
+
+{% for a in axlar %}
+<div class="axel">
+  <h3>{{ a.namn }}</h3>
+
+  {% if a.n_a or a.n_b %}
+  <div class="tvasidor">
+    <div class="sida">
+      <div class="sidhuvud">
+        {{ a.pol_a }}
+        <span class="antal">{{ a.n_a }} träffar</span>
+      </div>
+      {% if a.partier_a %}
+      <div class="partirad">
+        {% for p in a.partier_a %}
+        <span class="partitagg" style="background:{{ partifarger[p] }}">{{ p }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% for r in a.sida_a %}
+      <div class="belagg" style="--pfarg:{{ partifarger[r.parti] }}">
+        <span class="partitagg" style="background:{{ partifarger[r.parti] }}">{{ r.parti }}</span>
+        <span class="dtag">{{ doman_namn[r.doman] }}</span>
+        <p>{{ r.text[:190] }}{% if r.text|length > 190 %}&hellip;{% endif %}</p>
+      </div>
+      {% else %}
+      <p class="axel-tom">Inga träffar.</p>
+      {% endfor %}
+      {% if a.n_a > a.sida_a|length %}
+      <p class="axel-tom">&hellip; och {{ a.n_a - a.sida_a|length }} till.</p>
+      {% endif %}
+    </div>
+
+    <div class="sida">
+      <div class="sidhuvud">
+        {{ a.pol_b }}
+        <span class="antal">{{ a.n_b }} träffar</span>
+      </div>
+      {% if a.partier_b %}
+      <div class="partirad">
+        {% for p in a.partier_b %}
+        <span class="partitagg" style="background:{{ partifarger[p] }}">{{ p }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% for r in a.sida_b %}
+      <div class="belagg" style="--pfarg:{{ partifarger[r.parti] }}">
+        <span class="partitagg" style="background:{{ partifarger[r.parti] }}">{{ r.parti }}</span>
+        <span class="dtag">{{ doman_namn[r.doman] }}</span>
+        <p>{{ r.text[:190] }}{% if r.text|length > 190 %}&hellip;{% endif %}</p>
+      </div>
+      {% else %}
+      <p class="axel-tom">Inga träffar.</p>
+      {% endfor %}
+      {% if a.n_b > a.sida_b|length %}
+      <p class="axel-tom">&hellip; och {{ a.n_b - a.sida_b|length }} till.</p>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <p class="axel-tom">Inga träffar alls &mdash; fraserna behöver breddas.</p>
+  {% endif %}
+</div>
+{% endfor %}
+
+{% endblock %}

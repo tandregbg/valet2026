@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block titel %}{{ doman_namn }} &middot; Valmanifest 2026{% endblock %}
+{% block innehall %}
+
+<h1 style="border-left:4px solid {{ farg }}; padding-left:11px">{{ doman_namn }}</h1>
+<p class="ingress">
+  {{ antal_totalt }} förslag i urvalet. Sorterade efter träffsäkerhet i
+  taggningen och andel kvantifierade löften &mdash; de mest konkreta först.
+</p>
+
+<div class="filter">
+  <a href="{{ url_for('doman', doman_id=doman_id, sub=valt_sub) }}"
+     class="{{ 'pa' if not valt_parti }}">Alla partier</a>
+  {% for p, n in per_parti %}
+    {% if n %}
+    <a href="{{ url_for('doman', doman_id=doman_id, parti=p, sub=valt_sub) }}"
+       class="{{ 'pa' if valt_parti == p }}">{{ p }} <span style="opacity:.65">{{ n }}</span></a>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<div class="filter">
+  <a href="{{ url_for('doman', doman_id=doman_id, parti=valt_parti) }}"
+     class="{{ 'pa' if not valt_sub }}">Alla delområden</a>
+  {% for sid, snamn, n in subs %}
+  <a href="{{ url_for('doman', doman_id=doman_id, parti=valt_parti, sub=sid) }}"
+     class="{{ 'pa' if valt_sub == sid }}">{{ snamn }} <span style="opacity:.65">{{ n }}</span></a>
+  {% endfor %}
+</div>
+
+{% for f in forslag %}
+<div class="kort forslag" style="--pfarg:{{ partifarger[f.parti] }}">
+  <div class="meta">
+    <span class="partitagg" style="background:{{ partifarger[f.parti] }}">{{ f.parti }}</span>
+    <span class="tagg">{{ f.typ }}</span>
+    {% if f.kvantifiering %}
+      <span class="tagg kvant">{{ f.kvantifiering|join(' &middot; ')|safe }}</span>
+    {% endif %}
+    {% if f.traffsakerhet <= 1 %}
+      <span class="tagg" title="Svag nyckelordsträff - granska manuellt">osäker taggning</span>
+    {% endif %}
+    {% if f.partiets_egen_rubrik %}
+      <span class="egen-rubrik">&ldquo;{{ f.partiets_egen_rubrik }}&rdquo;</span>
+    {% endif %}
+  </div>
+  <p>{{ f.text }}</p>
+</div>
+{% else %}
+<div class="kort"><p>Inga förslag matchar filtret.</p></div>
+{% endfor %}
+
+{% if antal_totalt > forslag|length %}
+<p class="ingress">Visar {{ forslag|length }} av {{ antal_totalt }}. Filtrera för att se fler.</p>
+{% endif %}
+
+<h2>Andra domäner</h2>
+<div class="filter">
+  {% for did, dnamn in domaner %}
+  <a href="{{ url_for('doman', doman_id=did) }}"
+     class="{{ 'pa' if did == doman_id }}">{{ dnamn }}</a>
+  {% endfor %}
+</div>
+
+{% endblock %}

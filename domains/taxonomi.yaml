@@ -1,0 +1,323 @@
+# Sakpolitisk domäntaxonomi - riksdagsvalet 2026
+# Version 0.1.0 (2026-09-13)
+#
+# Neutral hierarki som INTE följer något partis egen kapitelindelning.
+# Partiets egen rubrik bevaras separat på varje förslag (falt: partiets_egen_rubrik)
+# så att bada lagren kan jamforas: sakfraga (denna taxonomi) och inramning (partiets egen).
+#
+# nyckelord anvands for automatisk forstataggning. De ar avsiktligt breda -
+# manuell granskning forutsatts. Se CHANGELOG for metodnoteringar.
+
+version: 0.1.0
+datum: 2026-09-13
+
+domaner:
+  - id: ekonomi-skatt
+    namn: Ekonomi och skatt
+    farg: "#c0883f"
+    subdomaner:
+      - id: inkomstskatt
+        namn: Inkomstskatt
+        nyckelord: [inkomstskatt, jobbskatteavdrag, marginalskatt, skatt på arbete, sänkt skatt, skattesänkning, grundavdrag]
+      - id: kapital-formogenhet
+        namn: Kapital och förmögenhet
+        nyckelord: [kapitalskatt, reavinst, förmögenhetsskatt, arvsskatt, isk, sparande, aktier, utdelning]
+      - id: foretagsskatt
+        namn: Företag och näringsliv
+        nyckelord: [företagsskatt, bolagsskatt, arbetsgivaravgift, regelförenkling, entreprenör, småföretag, näringsliv]
+      - id: statsfinanser
+        namn: Statsfinanser och budget
+        nyckelord: [överskottsmål, statsskuld, budgetram, offentliga finanser, statsbidrag, finansiering, finanspolitik]
+      - id: levnadskostnader
+        namn: Inflation och levnadskostnader
+        nyckelord: [inflation, levnadskostnad, matpriser, plånboken, hushållsekonomi, dyrtid, prisökning]
+
+  - id: arbetsmarknad
+    namn: Arbetsmarknad
+    farg: "#6b7f5e"
+    subdomaner:
+      - id: sysselsattning
+        namn: Sysselsättning och jobb
+        nyckelord: [sysselsättning, arbetslöshet, nya jobb, jobbpolitik, anställa, arbetsmarknadspolitik]
+      - id: trygghetssystem
+        namn: A-kassa och trygghetssystem
+        nyckelord: [a-kassa, arbetslöshetsförsäkring, sjukförsäkring, sjukpenning, karensavdrag, försäkringskassan]
+      - id: arbetsratt
+        namn: Arbetsrätt och anställning
+        nyckelord: [las, anställningsskydd, arbetsrätt, visstidsanställning, hyvling, rätt till heltid, bemanning]
+      - id: arbetstid
+        namn: Arbetstid
+        nyckelord: [arbetstidsförkortning, arbetsvecka, sex timmar, 35-timmars, fyradagarsvecka, kortare arbetstid]
+      - id: arbetsmiljo
+        namn: Arbetsmiljö
+        nyckelord: [arbetsmiljö, arbetsskada, arbetsolycka, skyddsombud, stress i arbetet]
+      - id: lonebildning
+        namn: Lönebildning
+        nyckelord: [lönebildning, kollektivavtal, lönegap, kvinnolönelyft, jämställda löner, fackföreningar]
+
+  - id: valfard-halsa
+    namn: Vård och välfärd
+    farg: "#4a7c8c"
+    subdomaner:
+      - id: sjukvard-organisation
+        namn: Sjukvårdens organisation
+        nyckelord: [regioner, statligt huvudmannaskap, nationellt ansvar för vården, sjukhus, vårdköer, vårdplatser]
+      - id: primarvard
+        namn: Primärvård
+        nyckelord: [vårdcentral, primärvård, fast läkarkontakt, husläkare, närsjukhus]
+      - id: tandvard
+        namn: Tandvård
+        nyckelord: [tandvård, tandläkare, högkostnadsskydd tandvård]
+      - id: psykisk-ohalsa
+        namn: Psykisk hälsa
+        nyckelord: [psykisk ohälsa, psykiatri, självmord, ätstörning, bup, psykolog, mår dåligt]
+      - id: aldreomsorg
+        namn: Äldreomsorg
+        nyckelord: [äldreomsorg, äldre, hemtjänst, äldreboende, pensionär, demens]
+      - id: vinster-i-valfarden
+        namn: Vinster i välfärden
+        nyckelord: [vinstjakt, vinster i välfärden, privata aktörer, riskkapital, vinstuttag, privatisering av vård]
+      - id: pension
+        namn: Pensioner
+        nyckelord: [pension, pensionssystem, garantipension, premiepension, pensionsavgift, ålderspension]
+
+  - id: skola-utbildning
+    namn: Skola och utbildning
+    farg: "#a8603f"
+    subdomaner:
+      - id: forskola
+        namn: Förskola
+        nyckelord: [förskola, barngrupp, dagis, barnomsorg]
+      - id: grundskola
+        namn: Grundskola
+        nyckelord: [grundskola, lågstadiet, klasstorlek, elever i klassen, läroböcker, läsning, arbetsro]
+      - id: gymnasium-yrke
+        namn: Gymnasium och yrkesutbildning
+        nyckelord: [gymnasium, yrkesutbildning, yrkesprogram, lärling, komvux, vuxenutbildning]
+      - id: hogre-utbildning
+        namn: Högskola och forskning
+        nyckelord: [högskola, universitet, forskning, studiemedel, csn, akademisk]
+      - id: friskolor
+        namn: Friskolor och skolmarknad
+        nyckelord: [friskola, marknadsskola, skolval, skolpeng, vinstdrivande skola, kösystem]
+      - id: larare
+        namn: Lärare och professionen
+        nyckelord: [lärare, lärarbrist, lärarlöner, lärarutbildning, rektor, behörighet]
+      - id: skarm-digitalisering
+        namn: Skärmar och digitalisering i skolan
+        nyckelord: [skärm, mobilfri, digitalisering i skolan, mobiltelefon i skolan, surfplatta]
+
+  - id: kriminalitet-rattsvasende
+    namn: Brott och rättsväsende
+    farg: "#7d4a6b"
+    subdomaner:
+      - id: gangkriminalitet
+        namn: Gängkriminalitet
+        nyckelord: [gängkriminalitet, gängvåld, skjutningar, sprängningar, kriminella nätverk, gängen]
+      - id: polis
+        namn: Polis och resurser
+        nyckelord: [polis, poliser, polisbrist, kameraövervakning, lokal polis, polisstation]
+      - id: straffratt
+        namn: Straff och påföljder
+        nyckelord: [straffskärpning, straff, fängelse, anstalt, kriminalvård, påföljd, strafflindring]
+      - id: forebyggande
+        namn: Brottsförebyggande
+        nyckelord: [brottsförebyggande, socialtjänst, avhopparverksamhet, tidiga insatser, rekrytering av barn]
+      - id: brottsoffer
+        namn: Brottsoffer och utsatthet
+        nyckelord: [brottsoffer, våld mot kvinnor, hedersförtryck, sexualbrott, övergrepp mot barn, våldtäkt]
+
+  - id: migration-integration
+    namn: Migration och integration
+    farg: "#8c6d3f"
+    subdomaner:
+      - id: asyl
+        namn: Asyl och volymer
+        nyckelord: [asyl, asylinvandring, flykting, migrationspolitik, eu:s miniminivå, uppehållstillstånd]
+      - id: anhoriginvandring
+        namn: Anhöriginvandring
+        nyckelord: [anhöriginvandring, familjeåterförening, försörjningskrav]
+      - id: medborgarskap
+        namn: Medborgarskap
+        nyckelord: [medborgarskap, medborgarskapstest, naturalisation, återkallat medborgarskap]
+      - id: atervandring
+        namn: Återvandring och utvisning
+        nyckelord: [återvandring, utvisning, återvändande, förvar, avvisning]
+      - id: integration
+        namn: Integration och språk
+        nyckelord: [integration, sfi, svenska språket, segregation, utanförskapsområde, parallellsamhälle]
+      - id: arbetskraftsinvandring
+        namn: Arbetskraftsinvandring
+        nyckelord: [arbetskraftsinvandring, kompetensutvisning, arbetstillstånd, lönegolv]
+
+  - id: klimat-energi-miljo
+    namn: Klimat, energi och miljö
+    farg: "#4f7d5a"
+    subdomaner:
+      - id: utslappsmal
+        namn: Utsläppsmål och klimatpolitik
+        nyckelord: [utsläpp, klimatmål, koldioxid, klimatomställning, växthusgas, netto noll, klimatlag]
+      - id: energislag
+        namn: Energiproduktion
+        nyckelord: [kärnkraft, vindkraft, solkraft, förnybart, vattenkraft, elproduktion, reaktor]
+      - id: elpriser
+        namn: Elpriser och elnät
+        nyckelord: [elpris, elnät, elräkning, effektbrist, elområde, överföringskapacitet]
+      - id: transporter
+        namn: Transporter och drivmedel
+        nyckelord: [drivmedel, bensin, diesel, reduktionsplikt, elbil, laddinfrastruktur, flyg, kollektivtrafik, järnväg]
+      - id: natur-mangfald
+        namn: Natur och biologisk mångfald
+        nyckelord: [biologisk mångfald, naturskydd, art, havsmiljö, övergödning, naturreservat, ekosystem]
+      - id: skog-mark
+        namn: Skog och markanvändning
+        nyckelord: [skogsbruk, skogsägare, avverkning, äganderätt i skogen, markanvändning]
+
+  - id: bostad-infrastruktur
+    namn: Bostad och infrastruktur
+    farg: "#6a6a8c"
+    subdomaner:
+      - id: byggande
+        namn: Bostadsbyggande
+        nyckelord: [bostadsbyggande, byggregler, plan- och bygglagen, bygga fler bostäder, byggkostnad]
+      - id: hyresmarknad
+        namn: Hyresmarknad
+        nyckelord: [hyresrätt, hyra, hyresreglering, hyrestak, allmännytta, bostadskö]
+      - id: agt-boende
+        namn: Ägt boende och bostadsskatter
+        nyckelord: [bolån, amorteringskrav, ränteavdrag, fastighetsskatt, egnahem, villa, bostadsrätt]
+      - id: infrastruktur
+        namn: Infrastruktur
+        nyckelord: [infrastruktur, väg, järnväg, bredband, underhåll, stambana]
+
+  - id: familj-barn
+    namn: Familj och barn
+    farg: "#b0724f"
+    subdomaner:
+      - id: foraldraforsakring
+        namn: Föräldraförsäkring
+        nyckelord: [föräldraförsäkring, föräldraledighet, föräldrapenning, kvotering, dubbeldagar, vab]
+      - id: barnekonomi
+        namn: Barnfamiljers ekonomi
+        nyckelord: [barnbidrag, bostadsbidrag, underhållsstöd, barnavdrag, flerbarnstillägg]
+      - id: barns-uppvaxt
+        namn: Barns uppväxt och skydd
+        nyckelord: [barns uppväxt, sociala medier åldersgräns, algoritmer, skärmtid, placerade barn, fritidskort]
+
+  - id: forsvar-utrikes
+    namn: Försvar och utrikespolitik
+    farg: "#5c6b7d"
+    subdomaner:
+      - id: forsvarsanslag
+        namn: Försvar och totalförsvar
+        nyckelord: [försvar, försvarsanslag, totalförsvar, värnplikt, civilförsvar, beredskap, militär]
+      - id: sakerhetspolitik
+        namn: Säkerhetspolitik och Nato
+        nyckelord: [nato, säkerhetspolitik, ryssland, ukraina, allians, hot mot sverige]
+      - id: eu
+        namn: EU
+        nyckelord: [eu, europeiska unionen, eu-samarbete, bryssel, eu-medlemskap]
+      - id: bistand
+        namn: Bistånd och global utveckling
+        nyckelord: [bistånd, utvecklingssamarbete, global utveckling, fattigdom i världen]
+
+  - id: demokrati-rattigheter
+    namn: Demokrati och rättigheter
+    farg: "#8c5a5a"
+    subdomaner:
+      - id: institutioner
+        namn: Grundlag och institutioner
+        nyckelord: [grundlag, författning, domstol, myndighet, konstitution, maktdelning, public service]
+      - id: jamstalldhet
+        namn: Jämställdhet
+        nyckelord: [jämställdhet, jämställd, kvinnors rättigheter, könsdiskriminering]
+      - id: minoriteter
+        namn: Minoriteter och lika rättigheter
+        nyckelord: [hbtq, diskriminering, minoritet, samer, funktionsnedsättning, tillgänglighet, rasism]
+      - id: kultur-civilsamhalle
+        namn: Kultur och civilsamhälle
+        nyckelord: [kultur, kulturpolitik, bibliotek, idrott, civilsamhälle, folkbildning, föreningsliv]
+      - id: medier-yttrandefrihet
+        namn: Medier och yttrandefrihet
+        nyckelord: [yttrandefrihet, press, mediestöd, desinformation, källkritik]
+
+  - id: landsbygd-regional
+    namn: Landsbygd och regional utveckling
+    farg: "#7a8c4a"
+    subdomaner:
+      - id: jordbruk-livsmedel
+        namn: Jordbruk och livsmedel
+        nyckelord: [jordbruk, lantbruk, livsmedelsproduktion, bonde, självförsörjning, matproduktion, djurskydd]
+      - id: regional-service
+        namn: Service i hela landet
+        nyckelord: [landsbygd, glesbygd, service i hela landet, hela landet ska leva, regional utveckling]
+      - id: jakt-aganderatt
+        namn: Jakt och äganderätt
+        nyckelord: [jakt, jägare, vargstam, rovdjur, äganderätt, viltvård]
+
+# Tvargaende konfliktaxlar. Ett forslag kan bara flera axlar samtidigt,
+# oberoende av vilken domain det tillhor. Det ar har de mest intressanta
+# monstren brukar synas - de som ingen enskild domain fangar.
+axlar:
+  # Endast flerordiga, stallningstagande fraser. Enstaka ord som "marknad"
+  # eller "valfrihet" duger inte - de forekommer lika ofta hos den som ar
+  # emot som hos den som ar for ("avskaffa lagen om valfrihet").
+  - id: stat-marknad
+    namn: Stat vs marknad
+    pol_a: Mer offentligt
+    pol_b: Mer marknad
+    nyckelord_a: [stoppa vinstjakten, vinster i välfärden, vinstförbud, förstatliga,
+                  offentlig regi, avprivatisering, i gemensam ägo, icke vinstdrivande,
+                  begränsa vinstuttag, återta driften]
+    nyckelord_b: [fritt vårdval, ökad valfrihet, fler privata utförare, konkurrensutsätta,
+                  avreglera, privata alternativ, lov i vården, entreprenad,
+                  utmaningsrätt, fler aktörer]
+
+  - id: centralisering
+    namn: Centralisering vs decentralisering
+    pol_a: Centralisera
+    pol_b: Decentralisera
+    nyckelord_a: [statligt huvudmannaskap, nationellt ansvar, avveckla regionerna, staten ska ta över]
+    nyckelord_b: [kommunalt självstyre, lokalt beslutsfattande, närmare medborgarna, decentralisera]
+
+  - id: stad-landsbygd
+    namn: Stad vs landsbygd
+    pol_a: Storstadsfokus
+    pol_b: Landsbygdsfokus
+    nyckelord_a: [storstadsregioner, urbanisering, förtätning, storstädernas behov]
+    nyckelord_b: [hela landet ska leva, landsbygden, glesbygd, service i hela landet,
+                  regional utveckling, mindre orter]
+
+  - id: frihet-kontroll
+    namn: Frihet vs kontroll
+    pol_a: Mer kontroll
+    pol_b: Mer frihet
+    nyckelord_a: [inför förbud, åldersgräns för, utökad övervakning, tillståndsplikt,
+                  skärpta krav, kameraövervakning, anmälningsplikt]
+    nyckelord_b: [avskaffa förbudet, individens frihet, eget ansvar, självbestämmande,
+                  minska regelbördan, ta bort kravet]
+
+  - id: nationellt-internationellt
+    namn: Nationellt vs internationellt
+    pol_a: Nationell suveränitet
+    pol_b: Internationellt samarbete
+    nyckelord_a: [nationell suveränitet, svenska intressen först, behåll vetorätten,
+                  mindre makt till eu, självständig valuta, nej till euron]
+    nyckelord_b: [fördjupat eu-samarbete, gemensamma europeiska regler, internationellt samarbete,
+                  stärkt fn, global samverkan]
+
+# Utsagetyper. Skillnaden spelar roll: en vision och ett kvantifierat
+# lofte ar inte samma sorts pastaende och bor inte raknas ihop rakt av.
+typer:
+  - id: reform
+    namn: Konkret reform
+    beskrivning: Atgard som kan genomforas och foljas upp
+  - id: mal
+    namn: Mål
+    beskrivning: Onskat utfall utan angiven metod
+  - id: princip
+    namn: Princip/vision
+    beskrivning: Vardering eller inriktning
+  - id: kritik
+    namn: Kritik
+    beskrivning: Invandning mot motstandare eller nulage

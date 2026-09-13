@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block titel %}Valmanifest 2026{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='stil.css') }}">
+</head>
+<body>
+<header class="topp">
+  <div class="wrap">
+    <a class="markn" href="{{ url_for('index') }}">
+      Valmanifest <strong>2026</strong>
+    </a>
+    <nav>
+      <a href="{{ url_for('index') }}">Täckning</a>
+      <a href="{{ url_for('axlar') }}">Konfliktaxlar</a>
+      <a href="{{ url_for('inramning') }}">Inramning</a>
+      <a href="{{ url_for('om') }}">Metod</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+{% block innehall %}{% endblock %}
+</main>
+
+<footer class="wrap fot">
+  <p>Källa: partiernas egna valmanifest, hämtade 2026-09-13.
+     Taggningen är maskinell och oreviderad &mdash; se
+     <a href="{{ url_for('om') }}">Metod</a>.</p>
+</footer>
+</body>
+</html>

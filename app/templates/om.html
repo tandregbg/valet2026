@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block titel %}Metod &middot; Valmanifest 2026{% endblock %}
+{% block innehall %}
+
+<h1>Metod och förbehåll</h1>
+
+<div class="varning">
+  <strong>Taggningen är maskinell och oreviderad.</strong> Varje förslag har
+  tilldelats domän genom nyckelordsmatchning mot taxonomin, inte genom
+  läsning. Det ger systematiska fel: en text om krisberedskap kan hamna
+  under &rdquo;kapital och förmögenhet&rdquo; för att ordet &rdquo;lager&rdquo;
+  förekommer. Siffrorna duger för att hitta mönster och tystnader &mdash; inte
+  som belägg för vad ett parti tycker. Kontrollera alltid mot källtexten.
+</div>
+
+<h2>Så är materialet uppbyggt</h2>
+<p class="ingress" style="max-width:70ch">
+  Två lager hålls isär. <strong>Sakfrågan</strong> &mdash; taxonomins
+  {{ 12 }} domäner &mdash; är neutral och följer inget partis egen indelning,
+  vilket gör den jämförbar. <strong>Inramningen</strong> &mdash; partiets egen
+  rubrik &mdash; bevaras på varje rad. Det gör att man kan jämföra både vad
+  partierna föreslår och hur de väljer att presentera det.
+</p>
+<p class="ingress" style="max-width:70ch">
+  Manifesten har olika typografi, så segmenteringen sker med en
+  partispecifik parser per dokument: KD har punktlistor, L har numrerade
+  förslag, MP och C löpande kapiteltext. Därför varierar hur väl
+  &rdquo;ett förslag&rdquo; motsvarar en faktisk politisk åtgärd mellan partierna.
+</p>
+
+<h2>Osäker taggning per parti</h2>
+<p class="ingress">
+  Rader med bara en nyckelordsträff är minst tillförlitliga. Hög andel
+  betyder att partiets språk ligger långt från taxonomins ordval &mdash;
+  inte att partiet är vagt.
+</p>
+<table class="enkel">
+  <thead>
+    <tr><th>Parti</th><th class="num">Förslag</th>
+        <th class="num">Svag träff</th><th class="num">Andel</th>
+        <th style="width:30%"></th></tr>
+  </thead>
+  <tbody>
+  {% for b in brist %}
+    <tr>
+      <td><span class="partitagg" style="background:{{ partifarger[b.parti] }}">{{ b.parti }}</span>
+          {{ parti_namn[b.parti] }}</td>
+      <td class="num">{{ b.totalt }}</td>
+      <td class="num">{{ b.svaga }}</td>
+      <td class="num">{{ b.pct }}%</td>
+      <td><div class="stapel" style="width:{{ b.pct }}%; background:#b8860b"></div></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Fördelning av utsagetyper</h2>
+<p class="ingress">
+  Ett kvantifierat löfte och en vision är inte samma sorts påstående och bör
+  inte räknas ihop rakt av. Övervikten för &rdquo;princip&rdquo; speglar delvis
+  att heuristiken är försiktig &mdash; den kräver ett tydligt verb för att
+  klassa något som reform.
+</p>
+<table class="enkel">
+  <thead><tr><th>Typ</th><th class="num">Antal</th><th class="num">Andel</th></tr></thead>
+  <tbody>
+  {% for typ, n in typer %}
+    <tr>
+      <td>{{ typ }}</td>
+      <td class="num">{{ n }}</td>
+      <td class="num">{{ (n/totalt*100)|round|int }}%</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Nästa steg för att höja kvaliteten</h2>
+<ul class="ingress" style="max-width:70ch">
+  <li>Manuell granskning av raderna med svag träff &mdash; sätt <code>granskad: true</code>.</li>
+  <li>Dubbeltaggning av ett parti av två oberoende personer, som stickprov på bias.</li>
+  <li>Sidhänvisning per förslag, så varje påstående kan spåras till källan.</li>
+  <li>Komplettera med riksdagens voteringsdata &mdash; vad partierna gjort, inte lovat.</li>
+</ul>
+
+<p class="ingress">Taxonomiversion {{ version }} &middot; {{ totalt }} förslag.</p>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block titel %}Inramning &middot; Valmanifest 2026{% endblock %}
+{% block innehall %}
+
+<h1>Inramning: partiets rubrik mot sakfrågan</h1>
+<p class="ingress">
+  Här syns de två lagren samtidigt. Varje rad är en rubrik som partiet
+  <em>självt</em> satt; färgfälten visar vilka sakområden förslagen under
+  den rubriken faktiskt rör. En bred spridning betyder att rubriken
+  samlar politik från många håll under ett gemensamt narrativ &mdash;
+  det är inramningen i arbete.
+</p>
+
+<div class="filter">
+  {% for p in partier %}
+  <a href="{{ url_for('inramning', parti=p) }}"
+     class="{{ 'pa' if valt == p }}">{{ p }}</a>
+  {% endfor %}
+</div>
+
+<h2>{{ parti_namn[valt] }} &mdash; rubriker sorterade efter spridning</h2>
+{% for r in rubriker %}
+<div class="rubrikrad">
+  <div class="titel">
+    {{ r.rubrik }}
+    <span style="color:var(--svag); font-weight:400; font-size:12px">
+      &middot; {{ r.totalt }} förslag i {{ r.spridning }}
+      {{ 'domän' if r.spridning == 1 else 'domäner' }}
+    </span>
+  </div>
+  <div class="fordelning">
+    {% for d in r.domaner %}
+    <span style="width:{{ d.andel }}%; background:{{ d.farg }}"
+          title="{{ d.namn }}: {{ d.n }} förslag ({{ d.andel }}%)">
+      {% if d.andel >= 14 %}{{ d.namn }}{% endif %}
+    </span>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<div class="kort"><p>Inga rubriker med tillräckligt underlag för detta parti.</p></div>
+{% endfor %}
+
+<h2>Konkretionsgrad</h2>
+<p class="ingress">
+  Andel förslag som innehåller en siffra (belopp, procent, årtal) och andel
+  som är formulerade som konkret reform snarare än princip. Måttet säger
+  inget om politikens innehåll &mdash; bara hur precist löftet är formulerat,
+  vilket gör det jämförbart mellan partier.
+</p>
+<table class="enkel">
+  <thead>
+    <tr>
+      <th>Parti</th>
+      <th class="num">Förslag</th>
+      <th class="num">Med siffra</th>
+      <th class="num">Andel</th>
+      <th class="num">Konkret reform</th>
+      <th style="width:26%"></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for k in konkretion %}
+    <tr>
+      <td>
+        <span class="partitagg" style="background:{{ partifarger[k.parti] }}">{{ k.parti }}</span>
+      </td>
+      <td class="num">{{ k.totalt }}</td>
+      <td class="num">{{ k.kvant }}</td>
+      <td class="num">{{ k.kvant_pct }}%</td>
+      <td class="num">{{ k.reform_pct }}%</td>
+      <td>
+        <div class="stapel" style="width:{{ k.kvant_pct }}%;
+             background:{{ partifarger[k.parti] }}"></div>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
