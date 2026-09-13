@@ -4,8 +4,9 @@
 |-------|-------|
 | **CR Number** | CR-002 |
 | **Date** | 2026-09-13 |
+| **Implementation Date** | 2026-09-13 |
 | **Author** | Claude Code |
-| **Status** | Proposed |
+| **Status** | Implemented |
 | **Priority** | High |
 | **Complexity** | Medium-High |
 | **Estimated Scope** | domains, ny datafil, redaktionell process |
