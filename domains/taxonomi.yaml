@@ -1,5 +1,5 @@
 # Sakpolitisk domäntaxonomi - riksdagsvalet 2026
-# Version 0.3.0 (2026-09-13)
+# Version 0.4.0 (2026-09-13)
 #
 # Neutral hierarki som INTE följer något partis egen kapitelindelning.
 # Partiets egen rubrik bevaras separat på varje förslag (falt: partiets_egen_rubrik)
@@ -8,7 +8,7 @@
 # nyckelord anvands for automatisk forstataggning. De ar avsiktligt breda -
 # manuell granskning forutsatts. Se CHANGELOG for metodnoteringar.
 
-version: 0.3.0
+version: 0.4.0
 datum: 2026-09-13
 
 domaner:
