@@ -4,6 +4,29 @@ Alla ändringar i detta projekt dokumenteras här.
 Format enligt [Keep a Changelog](https://keepachangelog.com/sv/1.1.0/),
 versionshantering enligt [SemVer](https://semver.org/lang/sv/).
 
+## [0.6.4] - 2026-09-13
+
+### Ändrat
+
+- Testantalet rättat i README: badge och körinstruktion sa 34 respektive 30,
+  men sviten innehåller 35 tester sedan regressionstesterna i 0.6.3.
+- Notering i strukturträdet om att katalognamnet lokalt (`val2026`) skiljer
+  sig från repots namn på GitHub (`valet2026`).
+
+### Noterat
+
+Projektet flyttat lokalt från `~/val2026` till `~/repos/val2026`. Påverkar
+inte repot — koden löser sina sökvägar via `Path(__file__).resolve()` och
+inga absoluta sökvägar finns i spårade filer.
+
+Två saker krävde åtgärd vid flytten och är värda att veta om någon gör samma
+sak: den virtuella miljön har absoluta sökvägar inbakade och måste byggas om,
+och en Flask-process som startats före flytten fortsätter läsa från den gamla
+sökvägen tills den dödas.
+
+Verifierat efter flytt: kallstart från projektrot i tom miljö (`env -i`),
+samtliga routes 200, statiska filer serveras, alla vyer läser rätt data.
+
 ## [0.6.3] - 2026-09-13
 
 ### Rättat

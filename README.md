@@ -1,6 +1,6 @@
 # Valmanifest 2026
 
-[![Tester](https://img.shields.io/badge/tester-34%20gr%C3%B6na-brightgreen)]()
+[![Tester](https://img.shields.io/badge/tester-35%20gr%C3%B6na-brightgreen)]()
 [![Version](https://img.shields.io/badge/version-0.6.1-blue)]()
 
 **Ett arbetsexempel på hur en ostrukturerad textmassa blir ett beslutsunderlag
@@ -88,7 +88,7 @@ om osäkerhet väger tyngre. Se `ARTIKEL.md` för varför det visade sig avgöra
 ## Struktur
 
 ```
-val2026/
+val2026/                  # katalognamn lokalt; repot heter valet2026
 ├── manifest/          Källdokument (PDF + text) + INDEX.md med checksummor
 ├── domains/
 │   ├── taxonomi.yaml      12 domäner, 60 subdomäner, 5 konfliktaxlar
@@ -100,7 +100,7 @@ val2026/
 │   └── pastaenden.jsonl   122 granskade påståenden
 ├── app/               Flask-app
 ├── docs/change-requests/  CR-001..005
-├── tests/             30 tester
+├── tests/             35 tester
 ├── ARTIKEL.md         Teknisk genomgång av processen
 └── CHANGELOG.md
 ```
@@ -110,7 +110,7 @@ val2026/
 ```bash
 python3 -m venv .venv && .venv/bin/pip install flask pyyaml pytest
 .venv/bin/python domains/extrahera.py     # bygg om forslag.jsonl
-.venv/bin/python -m pytest tests/ -q      # 34 tester
+.venv/bin/python -m pytest tests/ -q      # 35 tester
 .venv/bin/python app/app.py               # startar servern
 ```
 
