@@ -2,7 +2,8 @@
 
 ## Vad som faktiskt krävs för att göra en textmassa till ett beslutsunderlag — steg för steg, med felen kvar
 
-*Skriven 2026-09-13. Kod, data och källor:
+*Skriven 2026-09-13. Publicerad [på LinkedIn](https://www.linkedin.com/pulse/d%C3%A4rf%C3%B6r-kan-du-inte-bara-en-ai-sammanfatta-era-dokument-tomas-andr%C3%A9-18ipf/).
+Kod, data och källor:
 [github.com/tandregbg/valet2026](https://github.com/tandregbg/valet2026)*
 
 ---

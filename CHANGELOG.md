@@ -4,6 +4,38 @@ Alla ändringar i detta projekt dokumenteras här.
 Format enligt [Keep a Changelog](https://keepachangelog.com/sv/1.1.0/),
 versionshantering enligt [SemVer](https://semver.org/lang/sv/).
 
+## [0.6.2] - 2026-09-13
+
+### Publicerat
+
+Artikeln och inlägget publicerade på LinkedIn. Länkarna finns i README och
+i artikelns ingress, så att spårbarheten går åt båda hållen: artikeln pekar
+på koden, repot visar var det publicerades.
+
+- Artikel: https://www.linkedin.com/pulse/d%C3%A4rf%C3%B6r-kan-du-inte-bara-en-ai-sammanfatta-era-dokument-tomas-andr%C3%A9-18ipf/
+- Inlägg: https://www.linkedin.com/feed/update/urn:li:activity:7504920473386909696/
+
+### Tillagt
+
+- `docs/bilder/tackningsmatris.png` och `docs/bilder/om-kallor-och-process.png`
+  (retina, 2x) - används i README och artikeln.
+
+### Ändrat
+
+Artikeln avpolitiserad i sista passet inför publicering:
+
+- Axelexemplet påstod att två partier "argumenterar mot marknadslösningar i
+  välfärden". Det var en tolkning av deras politik presenterad som fakta, och
+  behövdes inte för att förklara det tekniska problemet. Ersatt med den
+  generella principen: den som argumenterar mot ett fenomen nämner det oftare
+  än den som är likgiltig, så frekvens är en usel proxy for hållning.
+- Strukturtabellen, parserlistan och det redaktionella beslutet om
+  komplementdokumentet anonymiserade till "dokument 1-8".
+- Kvar: fyra partinamn, alla om filformat och bot-skydd i hämtningsfasen.
+
+Verifierat: noll procenttal per parti, noll påståenden om vad något parti
+vill, noll sakpolitiska ämnesexempel.
+
 ## [0.6.0] - 2026-09-13
 
 Påståendebanken redaktionellt granskad, och om-sida med källreferenser,

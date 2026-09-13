@@ -13,6 +13,10 @@ koden, och en changelog som innehåller felen lika utförligt som framstegen.
 Valmanifesten är testmaterialet, inte poängen. Samma metod fungerar på
 kundintervjuer, remissvar, offerter eller mötesprotokoll.
 
+**Publicerat 2026-09-13:**
+[artikeln på LinkedIn](https://www.linkedin.com/pulse/d%C3%A4rf%C3%B6r-kan-du-inte-bara-en-ai-sammanfatta-era-dokument-tomas-andr%C3%A9-18ipf/) ·
+[inlägget](https://www.linkedin.com/feed/update/urn:li:activity:7504920473386909696/)
+
 ![Täckningsmatrisen](docs/bilder/tackningsmatris.png)
 
 *Varje ruta går att klicka på och spåra tillbaka till en textrad i ett
